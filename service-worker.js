@@ -1,7 +1,10 @@
-const CACHE_NAME = "daily-note-shell-v5";
-const SHELL_FILES = [
+const CACHE_NAME = "daily-note-shell-v6";
+const APP_SHELL_FILES = [
+  "./",
   "./index.html",
-  "./manifest.webmanifest",
+  "./manifest.webmanifest?v=0.1.11",
+  "./assets/styles.css?v=0.1.11",
+  "./assets/app.js?v=0.1.11",
   "./icon-192.png",
   "./icon-512.png",
   "./apple-touch-icon.png"
@@ -9,7 +12,7 @@ const SHELL_FILES = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_FILES)).catch(() => {})
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL_FILES)).catch(() => {})
   );
   self.skipWaiting();
 });
@@ -35,13 +38,40 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  const requestUrl = new URL(event.request.url);
+
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", responseClone)).catch(() => {});
+          return response;
+        })
+        .catch(() => caches.match("./").then((cached) => cached || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  if (requestUrl.origin !== self.location.origin) {
+    return;
+  }
+
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
+    caches.match(event.request).then((cached) => {
+      if (cached) {
+        return cached;
+      }
+
+      return fetch(event.request).then((response) => {
+        if (!response || response.status !== 200) {
+          return response;
+        }
+
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone)).catch(() => {});
         return response;
-      })
-      .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
+      });
+    })
   );
 });
