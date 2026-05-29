@@ -12,10 +12,169 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <title>日行小记</title>
   <script>
-    if (window.location.protocol !== "file:" && /\/index\.html$/i.test(window.location.pathname)) {
-      const normalizedPath = window.location.pathname.replace(/\/index\.html$/i, "/");
-      window.location.replace(`${window.location.origin}${normalizedPath}${window.location.search}${window.location.hash}`);
-    }
+    (() => {
+      if (window.location.protocol !== "file:" && /\/index\.html$/i.test(window.location.pathname)) {
+        const normalizedPath = window.location.pathname.replace(/\/index\.html$/i, "/");
+        window.location.replace(`${window.location.origin}${normalizedPath}${window.location.search}${window.location.hash}`);
+        return;
+      }
+
+      const BOOT_RETRY_KEY = "daily-note-boot-retry-v1";
+      const BOOT_TIMEOUT_MS = 2200;
+      const BOOT_CHECK_INTERVAL_MS = 250;
+      let bootNotice = null;
+
+      function isBootReady() {
+        const currentDate = document.getElementById("currentDate")?.textContent.trim();
+        const focusSummary = document.getElementById("focusSummary")?.textContent.trim();
+        const quoteText = document.getElementById("quoteText")?.textContent.trim();
+        return Boolean(currentDate && focusSummary && quoteText);
+      }
+
+      function clearBootRetryMarker() {
+        try {
+          sessionStorage.removeItem(BOOT_RETRY_KEY);
+        } catch (error) {
+          // Ignore storage failures.
+        }
+      }
+
+      function normalizeRetryUrl() {
+        const url = new URL(window.location.href);
+        if (!url.searchParams.has("bootRetry")) {
+          return;
+        }
+        url.searchParams.delete("bootRetry");
+        window.history.replaceState({}, "", url.toString());
+      }
+
+      function createBootNotice() {
+        if (bootNotice) {
+          return bootNotice;
+        }
+
+        bootNotice = document.createElement("div");
+        bootNotice.setAttribute("role", "alert");
+        bootNotice.style.position = "fixed";
+        bootNotice.style.right = "16px";
+        bootNotice.style.bottom = "16px";
+        bootNotice.style.zIndex = "9999";
+        bootNotice.style.maxWidth = "320px";
+        bootNotice.style.padding = "14px 14px 12px";
+        bootNotice.style.borderRadius = "16px";
+        bootNotice.style.background = "rgba(36, 51, 56, 0.94)";
+        bootNotice.style.color = "#ffffff";
+        bootNotice.style.boxShadow = "0 18px 36px rgba(20, 36, 40, 0.26)";
+        bootNotice.style.fontFamily = "\"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif";
+        bootNotice.style.lineHeight = "1.55";
+
+        const title = document.createElement("strong");
+        title.textContent = "页面加载异常";
+        title.style.display = "block";
+        title.style.marginBottom = "6px";
+
+        const description = document.createElement("div");
+        description.textContent = "已尝试自动恢复一次。如果内容仍未完整显示，请点下方按钮重新加载。";
+        description.style.fontSize = "14px";
+
+        const action = document.createElement("button");
+        action.type = "button";
+        action.textContent = "重新加载";
+        action.style.marginTop = "10px";
+        action.style.minHeight = "38px";
+        action.style.padding = "0 14px";
+        action.style.border = "0";
+        action.style.borderRadius = "999px";
+        action.style.background = "#8ee0c5";
+        action.style.color = "#14322d";
+        action.style.font = "inherit";
+        action.style.fontWeight = "700";
+        action.style.cursor = "pointer";
+        action.addEventListener("click", () => {
+          const retryUrl = new URL(window.location.href);
+          retryUrl.searchParams.set("bootRetry", String(Date.now()));
+          window.location.replace(retryUrl.toString());
+        });
+
+        bootNotice.appendChild(title);
+        bootNotice.appendChild(description);
+        bootNotice.appendChild(action);
+        return bootNotice;
+      }
+
+      function showBootNotice() {
+        if (!document.body || bootNotice?.isConnected) {
+          return;
+        }
+        document.body.appendChild(createBootNotice());
+      }
+
+      function markBootReady() {
+        clearBootRetryMarker();
+        normalizeRetryUrl();
+        if (bootNotice?.isConnected) {
+          bootNotice.remove();
+        }
+      }
+
+      function scheduleBootMonitor() {
+        let resolved = false;
+
+        function finishIfReady() {
+          if (!isBootReady()) {
+            return false;
+          }
+          resolved = true;
+          markBootReady();
+          clearInterval(checkTimer);
+          clearTimeout(timeoutTimer);
+          return true;
+        }
+
+        if (finishIfReady()) {
+          return;
+        }
+
+        const checkTimer = window.setInterval(() => {
+          finishIfReady();
+        }, BOOT_CHECK_INTERVAL_MS);
+
+        const timeoutTimer = window.setTimeout(() => {
+          if (resolved || finishIfReady()) {
+            return;
+          }
+
+          let hasRetried = false;
+          try {
+            hasRetried = sessionStorage.getItem(BOOT_RETRY_KEY) === "1";
+          } catch (error) {
+            hasRetried = false;
+          }
+
+          if (!hasRetried) {
+            try {
+              sessionStorage.setItem(BOOT_RETRY_KEY, "1");
+            } catch (error) {
+              // Ignore storage failures and still retry once.
+            }
+            const retryUrl = new URL(window.location.href);
+            retryUrl.searchParams.set("bootRetry", String(Date.now()));
+            window.location.replace(retryUrl.toString());
+            return;
+          }
+
+          showBootNotice();
+        }, BOOT_TIMEOUT_MS);
+
+        window.__dailyNoteBootReady = markBootReady;
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", scheduleBootMonitor, { once: true });
+      } else {
+        scheduleBootMonitor();
+      }
+    })();
   </script>
     <link rel="stylesheet" href="./assets/styles.css?v=0.1.11">
 </head>
