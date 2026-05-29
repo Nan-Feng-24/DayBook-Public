@@ -16,5 +16,6 @@ coverage/
 
 # Local backups and export artifacts
 备份/
+历史版本/
 *.zip
 *-备份-*.json

@@ -8,6 +8,8 @@
     const SNAPSHOT_KEY = "daily-note-snapshots-v1";
     const SNAPSHOT_LIMIT = 5;
     const LEGACY_STORAGE_KEY = "daily-note-tasks";
+    const ANNOUNCEMENT_VERSION = "0.1.10";
+    const ANNOUNCEMENT_READ_KEY = "daily-note-announcement-read-v1";
     const todayKey = formatDateKey(new Date());
     const defaultMonthKey = todayKey.slice(0, 7);
     const DEFAULT_QUOTES = {
@@ -140,6 +142,12 @@
     const importFileInput = document.getElementById("importFileInput");
     const currentDate = document.getElementById("currentDate");
     const focusSummary = document.getElementById("focusSummary");
+    const announcementTrigger = document.getElementById("announcementTrigger");
+    const announcementModal = document.getElementById("announcementModal");
+    const announcementBackdrop = document.getElementById("announcementBackdrop");
+    const announcementCloseBtn = document.getElementById("announcementCloseBtn");
+    const announcementDismissBtn = document.getElementById("announcementDismissBtn");
+    const announcementMarkReadBtn = document.getElementById("announcementMarkReadBtn");
     const installCard = document.getElementById("installCard");
     const installNote = document.getElementById("installNote");
     const installAppBtn = document.getElementById("installAppBtn");
@@ -194,13 +202,16 @@
     let quoteState = loadQuoteState();
     let reviews = loadReviews();
     let deferredInstallPrompt = null;
+    let announcementReadVersion = loadAnnouncementReadVersion();
 
     renderDate();
     updateDeadlineField();
     syncSettingsInputs();
     renderAll();
+    renderAnnouncementTrigger();
     refreshDateAtMidnight();
     initInstallSupport();
+    initAnnouncementSupport();
 
     addTaskBtn.addEventListener("click", addTask);
     taskInput.addEventListener("keydown", (event) => {
@@ -307,6 +318,11 @@
     dangerHoursInput.addEventListener("change", saveSettingsFromInputs);
     installAppBtn.addEventListener("click", handleInstallApp);
     installHelpBtn.addEventListener("click", showInstallHelp);
+    announcementTrigger.addEventListener("click", openAnnouncementModal);
+    announcementCloseBtn.addEventListener("click", closeAnnouncementModal);
+    announcementBackdrop.addEventListener("click", closeAnnouncementModal);
+    announcementDismissBtn.addEventListener("click", closeAnnouncementModal);
+    announcementMarkReadBtn.addEventListener("click", handleAnnouncementPrimaryAction);
     refreshQuoteBtn.addEventListener("click", refreshQuoteForCurrentView);
     editQuoteBtn.addEventListener("click", editQuoteForCurrentView);
     saveQuoteBtn.addEventListener("click", saveCurrentQuoteToLibrary);
@@ -325,6 +341,68 @@
 
     function createTaskId() {
       return `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+    }
+
+    function loadAnnouncementReadVersion() {
+      try {
+        const raw = localStorage.getItem(ANNOUNCEMENT_READ_KEY);
+        return typeof raw === "string" ? raw : "";
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function isAnnouncementUnread() {
+      return announcementReadVersion !== ANNOUNCEMENT_VERSION;
+    }
+
+    function renderAnnouncementTrigger() {
+      const unread = isAnnouncementUnread();
+      announcementTrigger.textContent = unread ? "未读更新" : ANNOUNCEMENT_VERSION;
+      announcementTrigger.classList.toggle("unread", unread);
+      announcementTrigger.classList.toggle("read", !unread);
+      announcementTrigger.setAttribute(
+        "aria-label",
+        unread ? `查看 ${ANNOUNCEMENT_VERSION} 未读更新` : `查看当前版本 ${ANNOUNCEMENT_VERSION} 更新公告`
+      );
+      announcementDismissBtn.textContent = unread ? "稍后再看" : "关闭";
+      announcementMarkReadBtn.textContent = unread ? "标记已读" : "关闭公告";
+    }
+
+    function initAnnouncementSupport() {
+      document.addEventListener("keydown", handleAnnouncementKeydown);
+      if (isAnnouncementUnread()) {
+        openAnnouncementModal();
+      }
+    }
+
+    function handleAnnouncementKeydown(event) {
+      if (event.key === "Escape" && !announcementModal.hidden) {
+        closeAnnouncementModal();
+      }
+    }
+
+    function openAnnouncementModal() {
+      announcementModal.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeAnnouncementModal() {
+      announcementModal.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    function handleAnnouncementPrimaryAction() {
+      if (isAnnouncementUnread()) {
+        announcementReadVersion = ANNOUNCEMENT_VERSION;
+        try {
+          localStorage.setItem(ANNOUNCEMENT_READ_KEY, announcementReadVersion);
+        } catch (error) {
+          // Ignore storage failures and still allow the modal to close.
+        }
+        renderAnnouncementTrigger();
+      }
+      closeAnnouncementModal();
     }
 
     function loadTasks() {

@@ -7,11 +7,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="日行小记">
-  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="manifest" href="./manifest.webmanifest?v=0.1.10">
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <title>日行小记</title>
-    <link rel="stylesheet" href="./assets/styles.css">
+    <link rel="stylesheet" href="./assets/styles.css?v=0.1.10">
 </head>
 <body>
   <main class="page">
@@ -24,6 +24,7 @@
               <div class="brand-copy">
                 <h1>日行小记</h1>
                 <p class="subtitle">记下想做的事，也记住认真生活的每一天。</p>
+                <button id="announcementTrigger" class="announcement-trigger unread" type="button" aria-haspopup="dialog" aria-controls="announcementModal">未读更新</button>
               </div>
             </div>
           </div>
@@ -291,6 +292,38 @@
     </section>
   </main>
 
-    <script src="./assets/app.js"></script>
+  <div id="announcementModal" class="announcement-modal" hidden>
+    <div id="announcementBackdrop" class="announcement-backdrop" aria-hidden="true"></div>
+    <section class="announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="announcementTitle">
+      <header class="announcement-header">
+        <div class="announcement-title-block">
+          <span class="announcement-kicker">版本更新</span>
+          <h2 id="announcementTitle" class="announcement-title">日行小记 0.1.10</h2>
+          <p class="announcement-subtitle">本次更新主要完善了寄语功能，并补充了更新公告与数据恢复能力。</p>
+        </div>
+        <button id="announcementCloseBtn" class="announcement-close" type="button" aria-label="关闭更新公告">×</button>
+      </header>
+
+      <div class="announcement-body">
+        <section class="announcement-section">
+          <h3>本次更新</h3>
+          <ul class="announcement-list">
+            <li>新增页面内更新公告入口，后续版本变化可直接在页面中查看。</li>
+            <li>寄语支持加入寄语库，方便保留喜欢的内容。</li>
+            <li>寄语支持隐藏不想再看到的句子。</li>
+            <li>新增寄语管理功能，常用内容可以自行整理。</li>
+            <li>补充数据恢复能力，误操作后更容易找回此前内容。</li>
+          </ul>
+        </section>
+      </div>
+
+      <footer class="announcement-footer">
+        <button id="announcementDismissBtn" class="announcement-secondary-btn" type="button">稍后再看</button>
+        <button id="announcementMarkReadBtn" class="announcement-primary-btn" type="button">标记已读</button>
+      </footer>
+    </section>
+  </div>
+
+  <script src="./assets/app.js?v=0.1.10"></script>
 </body>
 </html>

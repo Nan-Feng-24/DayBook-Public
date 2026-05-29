@@ -1,4 +1,4 @@
-const CACHE_NAME = "daily-note-shell-v2";
+const CACHE_NAME = "daily-note-shell-v4";
 const SHELL_FILES = [
   "./index.html",
   "./manifest.webmanifest",
