@@ -8,7 +8,7 @@
     const SNAPSHOT_KEY = "daily-note-snapshots-v1";
     const SNAPSHOT_LIMIT = 5;
     const LEGACY_STORAGE_KEY = "daily-note-tasks";
-    const ANNOUNCEMENT_VERSION = "0.1.10";
+    const ANNOUNCEMENT_VERSION = "0.1.11";
     const ANNOUNCEMENT_READ_KEY = "daily-note-announcement-read-v1";
     const todayKey = formatDateKey(new Date());
     const defaultMonthKey = todayKey.slice(0, 7);
@@ -152,6 +152,10 @@
     const installNote = document.getElementById("installNote");
     const installAppBtn = document.getElementById("installAppBtn");
     const installHelpBtn = document.getElementById("installHelpBtn");
+    const manualDock = document.getElementById("manualDock");
+    const manualCloseBtn = document.getElementById("manualCloseBtn");
+    const manualNav = document.getElementById("manualNav");
+    const manualContent = document.getElementById("manualContent");
     const quoteKicker = document.getElementById("quoteKicker");
     const quoteText = document.getElementById("quoteText");
     const quoteNote = document.getElementById("quoteNote");
@@ -195,6 +199,33 @@
     const clearMonthlyReviewBtn = document.getElementById("clearMonthlyReviewBtn");
     const timelineDate = document.getElementById("timelineDate");
     const timelineList = document.getElementById("timelineList");
+    const MANUAL_DEFAULT_SECTION = "manual-overview";
+    const MANUAL_SECTION_IDS = [
+      "manual-overview",
+      "manual-open",
+      "manual-structure",
+      "manual-update",
+      "manual-daily",
+      "manual-monthly",
+      "manual-calendar-timeline",
+      "manual-review",
+      "manual-quote",
+      "manual-backup",
+      "manual-install",
+      "manual-storage",
+      "manual-tips",
+      "manual-faq"
+    ];
+    const MANUAL_SECTION_LINKS = [
+      { selector: "#installHelpBtn, #installAppBtn, #installCard", sectionId: "manual-install" },
+      { selector: "#announcementTrigger", sectionId: "manual-update" },
+      { selector: "#dailyView .review-panel, #monthlyView .review-panel", sectionId: "manual-review" },
+      { selector: ".timeline-panel, .calendar-card", sectionId: "manual-calendar-timeline" },
+      { selector: "#dailyView .composer, #dailyView .settings-panel, #dailyView .task-panel", sectionId: "manual-daily" },
+      { selector: "#monthlyView .composer, #monthlyView .month-card, #monthlyView .task-panel", sectionId: "manual-monthly" },
+      { selector: ".quote-card, .visual-card, .hero-band", sectionId: "manual-quote" },
+      { selector: ".backup-actions", sectionId: "manual-backup" }
+    ];
 
     let tasks = loadTasks();
     let settings = loadSettings();
@@ -203,6 +234,8 @@
     let reviews = loadReviews();
     let deferredInstallPrompt = null;
     let announcementReadVersion = loadAnnouncementReadVersion();
+    let manualToggleBtn = null;
+    let activeManualSectionId = MANUAL_DEFAULT_SECTION;
 
     renderDate();
     updateDeadlineField();
@@ -212,6 +245,7 @@
     refreshDateAtMidnight();
     initInstallSupport();
     initAnnouncementSupport();
+    initManualSupport();
 
     addTaskBtn.addEventListener("click", addTask);
     taskInput.addEventListener("keydown", (event) => {
@@ -403,6 +437,183 @@
         renderAnnouncementTrigger();
       }
       closeAnnouncementModal();
+    }
+
+    function initManualSupport() {
+      if (!manualDock || !manualCloseBtn || !manualNav || !manualContent) {
+        return;
+      }
+
+      ensureManualToggleButton();
+      manualCloseBtn.addEventListener("click", () => setManualOpen(false));
+      manualNav.addEventListener("click", handleManualNavClick);
+      manualNav.addEventListener("wheel", handleManualNavWheel, { passive: false });
+      document.addEventListener("click", handleManualContextClick);
+      document.addEventListener("keydown", handleManualKeydown);
+      syncManualActiveState(MANUAL_DEFAULT_SECTION);
+    }
+
+    function ensureManualToggleButton() {
+      const brandCopy = announcementTrigger.closest(".brand-copy");
+      if (!brandCopy) {
+        return;
+      }
+
+      let heroLinks = brandCopy.querySelector(".hero-links");
+      if (!heroLinks) {
+        heroLinks = document.createElement("div");
+        heroLinks.className = "hero-links";
+        brandCopy.insertBefore(heroLinks, announcementTrigger);
+        heroLinks.appendChild(announcementTrigger);
+      }
+
+      manualToggleBtn = heroLinks.querySelector("#manualToggleBtn");
+      if (manualToggleBtn) {
+        return;
+      }
+
+      manualToggleBtn = document.createElement("button");
+      manualToggleBtn.id = "manualToggleBtn";
+      manualToggleBtn.className = "manual-toggle-btn";
+      manualToggleBtn.type = "button";
+      manualToggleBtn.textContent = "用户手册";
+      manualToggleBtn.setAttribute("aria-controls", "manualDock");
+      manualToggleBtn.setAttribute("aria-expanded", "false");
+      manualToggleBtn.addEventListener("click", toggleManual);
+      heroLinks.appendChild(manualToggleBtn);
+    }
+
+    function handleManualNavClick(event) {
+      const button = event.target.closest("button[data-manual-target]");
+      if (!button) {
+        return;
+      }
+
+      openManual(button.dataset.manualTarget, { forceHighlight: true });
+    }
+
+    function handleManualNavWheel(event) {
+      if (!manualNav || manualNav.scrollWidth <= manualNav.clientWidth) {
+        return;
+      }
+
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+        return;
+      }
+
+      const nextScrollLeft = manualNav.scrollLeft + event.deltaY;
+      const maxScrollLeft = manualNav.scrollWidth - manualNav.clientWidth;
+      const clampedScrollLeft = Math.max(0, Math.min(nextScrollLeft, maxScrollLeft));
+
+      if (clampedScrollLeft === manualNav.scrollLeft) {
+        return;
+      }
+
+      event.preventDefault();
+      manualNav.scrollLeft = clampedScrollLeft;
+    }
+
+    function handleManualContextClick(event) {
+      if (!manualDock || manualDock.contains(event.target) || announcementModal.contains(event.target)) {
+        return;
+      }
+
+      const sectionId = getManualSectionFromTarget(event.target);
+      if (!sectionId) {
+        return;
+      }
+
+      openManual(sectionId);
+    }
+
+    function handleManualKeydown(event) {
+      if (event.key === "Escape" && manualDock && !manualDock.hidden && announcementModal.hidden) {
+        setManualOpen(false);
+      }
+    }
+
+    function getManualSectionFromTarget(target) {
+      if (!(target instanceof Element)) {
+        return "";
+      }
+
+      const matched = MANUAL_SECTION_LINKS.find((item) => target.closest(item.selector));
+      return matched ? matched.sectionId : "";
+    }
+
+    function toggleManual() {
+      if (!manualDock) {
+        return;
+      }
+
+      if (manualDock.hidden) {
+        openManual();
+        return;
+      }
+
+      setManualOpen(false);
+    }
+
+    function setManualOpen(isOpen) {
+      if (!manualDock) {
+        return;
+      }
+
+      manualDock.hidden = !isOpen;
+      if (manualToggleBtn) {
+        manualToggleBtn.setAttribute("aria-expanded", String(isOpen));
+      }
+    }
+
+    function openManual(sectionId = MANUAL_DEFAULT_SECTION, options = {}) {
+      setManualOpen(true);
+      focusManualSection(sectionId, options);
+    }
+
+    function focusManualSection(sectionId, options = {}) {
+      if (!manualContent || !MANUAL_SECTION_IDS.includes(sectionId)) {
+        return;
+      }
+
+      if (
+        activeManualSectionId === sectionId &&
+        !options.forceHighlight &&
+        !manualDock.hidden
+      ) {
+        return;
+      }
+
+      const nextSection = document.getElementById(sectionId);
+      if (!nextSection) {
+        return;
+      }
+
+      activeManualSectionId = sectionId;
+      syncManualActiveState(sectionId);
+
+      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      manualContent.scrollTo({ top: 0, behavior });
+      const activeButton = manualNav.querySelector(`[data-manual-target="${sectionId}"]`);
+      if (activeButton) {
+        activeButton.scrollIntoView({ behavior, inline: "center", block: "nearest" });
+      }
+
+      nextSection.classList.remove("is-active");
+      requestAnimationFrame(() => {
+        nextSection.classList.add("is-active");
+      });
+    }
+
+    function syncManualActiveState(sectionId) {
+      const targetSectionId = sectionId || MANUAL_DEFAULT_SECTION;
+
+      manualNav.querySelectorAll("[data-manual-target]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.manualTarget === targetSectionId);
+      });
+
+      manualContent.querySelectorAll(".manual-section").forEach((section) => {
+        section.classList.toggle("is-active", section.id === targetSectionId);
+      });
     }
 
     function loadTasks() {
@@ -2350,19 +2561,7 @@
     }
 
     function showInstallHelp() {
-      const isAndroid = /Android/i.test(navigator.userAgent);
-      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      let message = "如果没有自动弹出安装，请在浏览器菜单里手动添加。";
-
-      if (isAndroid) {
-        message = "安卓浏览器里请点右上角菜单，再选“安装应用”或“添加到主屏幕”。";
-      } else if (isIOS) {
-        message = "iPhone 或 iPad 请点浏览器分享按钮，再选“添加到主屏幕”。";
-      } else {
-        message = "电脑浏览器里请打开地址栏或菜单里的“安装应用”或“创建快捷方式”。";
-      }
-
-      window.alert(message);
+      openManual("manual-install", { forceHighlight: true });
     }
 
     function startOfMonth(date) {

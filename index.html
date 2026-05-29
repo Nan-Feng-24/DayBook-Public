@@ -7,11 +7,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="日行小记">
-  <link rel="manifest" href="./manifest.webmanifest?v=0.1.10">
+  <link rel="manifest" href="./manifest.webmanifest?v=0.1.11">
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <title>日行小记</title>
-    <link rel="stylesheet" href="./assets/styles.css?v=0.1.10">
+    <link rel="stylesheet" href="./assets/styles.css?v=0.1.11">
 </head>
 <body>
   <main class="page">
@@ -292,14 +292,385 @@
     </section>
   </main>
 
+  <aside id="manualDock" class="manual-dock" hidden aria-label="用户手册">
+    <div class="manual-card">
+      <header class="manual-header">
+        <div class="manual-title-block">
+          <span class="manual-kicker">用户手册</span>
+          <h2 class="manual-title">日行小记用户手册</h2>
+          <p class="manual-tip">适用版本：<code>0.1.11</code></p>
+        </div>
+        <button id="manualCloseBtn" class="manual-close-btn" type="button" aria-label="关闭用户手册">×</button>
+      </header>
+
+      <div class="manual-layout">
+        <nav id="manualNav" class="manual-nav" aria-label="手册目录">
+          <button class="manual-nav-btn active" type="button" data-manual-target="manual-overview">1. 简介</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-open">2. 打开方式</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-structure">3. 首页结构</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-update">4. 更新公告</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-daily">5. 日度任务</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-monthly">6. 月度任务</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-calendar-timeline">7. 日历时间轴</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-review">8. 复盘功能</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-quote">9. 寄语功能</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-backup">10. 备份恢复</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-install">11. 安装到桌面</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-storage">12. 数据保存</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-tips">13. 使用建议</button>
+          <button class="manual-nav-btn" type="button" data-manual-target="manual-faq">14. 常见问题</button>
+        </nav>
+
+        <div id="manualContent" class="manual-content">
+          <section id="manual-overview" class="manual-section is-active">
+            <h3>1. 简介</h3>
+            <p><code>日行小记</code> 是一个日常记录工具，适合管理每日任务、月度计划、复盘内容与个人寄语。</p>
+            <p>你可以用它做这些事情：</p>
+            <ul>
+              <li>记录日度任务</li>
+              <li>记录月度任务与阶段安排</li>
+              <li>查看任务时间轴</li>
+              <li>写日度 / 月度复盘</li>
+              <li>收藏、隐藏、整理寄语</li>
+              <li>导出备份、导入备份、恢复最近快照</li>
+              <li>安装到桌面或主屏幕，像应用一样打开</li>
+            </ul>
+          </section>
+
+          <section id="manual-open" class="manual-section">
+            <h3>2. 打开方式</h3>
+            <p>本地打开：</p>
+            <ul>
+              <li>直接打开下载下来的 <code>index.html</code> 文件使用。</li>
+            </ul>
+            <p>公开访问地址：</p>
+            <ul>
+              <li><code>https://nan-feng-24.github.io/DayBook-Public/</code></li>
+            </ul>
+            <p>建议直接通过上面的公开网址打开使用。（若打不开电脑可使用加速器：Watt Toolkit）</p>
+          </section>
+
+          <section id="manual-structure" class="manual-section">
+            <h3>3. 首页结构</h3>
+            <p>首页主要分为几个区域：</p>
+            <ul>
+              <li>顶部信息区
+                <ul>
+                  <li>显示项目名称、当前日期、当前聚焦、安装入口、更新公告入口</li>
+                </ul>
+              </li>
+              <li>寄语区
+                <ul>
+                  <li>显示当前寄语和插画，并提供寄语管理功能</li>
+                </ul>
+              </li>
+              <li>日度视图
+                <ul>
+                  <li>管理当天任务、查看日历、时间轴、写日度复盘</li>
+                </ul>
+              </li>
+              <li>月度视图
+                <ul>
+                  <li>管理本月任务、查看月度统计、写月度复盘</li>
+                </ul>
+              </li>
+              <li>备份区
+                <ul>
+                  <li>导出、导入、恢复最近快照</li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+
+          <section id="manual-update" class="manual-section">
+            <h3>4. 更新公告怎么用</h3>
+            <p>如果当前版本有新内容，首页会显示：</p>
+            <ul>
+              <li><code>未读更新</code></li>
+            </ul>
+            <p>点击后会弹出版本公告。</p>
+            <p>使用规则：</p>
+            <ul>
+              <li>只打开公告，不会自动算已读</li>
+              <li>点击 <code>标记已读</code> 后，入口会变成当前版本号</li>
+              <li>新版本发布后，会再次显示 <code>未读更新</code></li>
+            </ul>
+          </section>
+
+          <section id="manual-daily" class="manual-section">
+            <h3>5. 日度任务怎么用</h3>
+            <p>在日度视图中，你可以：</p>
+            <ul>
+              <li>输入任务内容</li>
+              <li>设置截止时间</li>
+              <li>点击 <code>添加</code> 创建任务</li>
+              <li>勾选任务表示完成</li>
+              <li>编辑已有任务</li>
+              <li>删除单个任务</li>
+              <li>清除已完成任务</li>
+              <li>删除当前视图全部任务</li>
+            </ul>
+            <p>日度任务特点：</p>
+            <ul>
+              <li>会按日期归类</li>
+              <li>支持截止时间提醒</li>
+              <li>会参与顶部“当前聚焦”统计</li>
+            </ul>
+          </section>
+
+          <section id="manual-monthly" class="manual-section">
+            <h3>6. 月度任务怎么用</h3>
+            <p>切换到 <code>月度</code> 视图后，你可以：</p>
+            <ul>
+              <li>输入月度任务内容</li>
+              <li>设置月度截止时间</li>
+              <li>设置时间跨度结束日期</li>
+              <li>点击 <code>添加</code> 创建月度任务</li>
+            </ul>
+            <p>适合记录：</p>
+            <ul>
+              <li>本月目标</li>
+              <li>阶段推进事项</li>
+              <li>需要持续多天或多周完成的任务</li>
+            </ul>
+            <p>月度视图还会显示：</p>
+            <ul>
+              <li>本月任务数</li>
+              <li>未完成数</li>
+              <li>已完成数</li>
+              <li>临期 / 过期数</li>
+            </ul>
+          </section>
+
+          <section id="manual-calendar-timeline" class="manual-section">
+            <h3>7. 日历和时间轴</h3>
+            <p>日度视图里有两个辅助区域：</p>
+            <h4>日历</h4>
+            <ul>
+              <li>可以切换月份</li>
+              <li>可以点击某一天查看该日任务</li>
+              <li>适合回看某天安排</li>
+            </ul>
+            <h4>时间轴</h4>
+            <ul>
+              <li>显示当天任务的时间顺序</li>
+              <li>更适合按节奏查看一天的安排</li>
+            </ul>
+          </section>
+
+          <section id="manual-review" class="manual-section">
+            <h3>8. 复盘功能</h3>
+            <p>项目支持两类复盘：</p>
+            <h4>日度复盘</h4>
+            <p>适合记录：</p>
+            <ul>
+              <li>今天完成了什么</li>
+              <li>哪些地方卡住了</li>
+              <li>明天准备怎么接上</li>
+            </ul>
+            <p>操作方式：</p>
+            <ul>
+              <li>在日度复盘输入框中填写内容</li>
+              <li>点击 <code>保存日度复盘</code></li>
+              <li>如需清空，点击 <code>清空复盘</code></li>
+            </ul>
+            <h4>月度复盘</h4>
+            <p>适合记录：</p>
+            <ul>
+              <li>本月整体进展</li>
+              <li>阶段性问题</li>
+              <li>下个月准备继续推进的内容</li>
+            </ul>
+            <p>操作方式与日度复盘相同。</p>
+          </section>
+
+          <section id="manual-quote" class="manual-section">
+            <h3>9. 寄语功能怎么用</h3>
+            <p>寄语区支持以下操作：</p>
+            <ul>
+              <li><code>换一句</code>
+                <ul>
+                  <li>切换到另一条寄语</li>
+                </ul>
+              </li>
+              <li><code>临时改写</code>
+                <ul>
+                  <li>临时修改当前寄语内容</li>
+                </ul>
+              </li>
+              <li><code>加入寄语库</code>
+                <ul>
+                  <li>保存当前喜欢的寄语</li>
+                </ul>
+              </li>
+              <li><code>隐藏这句</code>
+                <ul>
+                  <li>不再显示这条寄语</li>
+                </ul>
+              </li>
+              <li><code>管理寄语</code>
+                <ul>
+                  <li>统一整理已加入或已隐藏的寄语</li>
+                </ul>
+              </li>
+            </ul>
+            <p>适合的使用方式：</p>
+            <ul>
+              <li>把喜欢的句子加入寄语库</li>
+              <li>把不想再看到的句子隐藏</li>
+              <li>定期在“管理寄语”里整理内容</li>
+            </ul>
+          </section>
+
+          <section id="manual-backup" class="manual-section">
+            <h3>10. 备份与恢复</h3>
+            <p>页面底部提供 3 个数据操作：</p>
+            <ul>
+              <li><code>导出备份</code></li>
+              <li><code>导入备份</code></li>
+              <li><code>恢复最近快照</code></li>
+            </ul>
+            <h4>导出备份</h4>
+            <p>作用：</p>
+            <ul>
+              <li>把当前任务、设置、复盘等数据导出为文件</li>
+            </ul>
+            <p>适合在这些时候做：</p>
+            <ul>
+              <li>改动较大之前</li>
+              <li>换浏览器之前</li>
+              <li>想手动留档时</li>
+            </ul>
+            <h4>导入备份</h4>
+            <p>作用：</p>
+            <ul>
+              <li>从之前导出的备份文件中恢复数据</li>
+            </ul>
+            <p>注意：</p>
+            <ul>
+              <li>导入后会覆盖当前页面内对应的数据状态</li>
+            </ul>
+            <h4>恢复最近快照</h4>
+            <p>作用：</p>
+            <ul>
+              <li>从浏览器本地保存的最近快照里恢复</li>
+            </ul>
+            <p>适合：</p>
+            <ul>
+              <li>误删内容后快速回退</li>
+              <li>调整寄语或任务后想撤销近期改动</li>
+            </ul>
+          </section>
+
+          <section id="manual-install" class="manual-section">
+            <h3>11. 安装到桌面</h3>
+            <p>建议先打开：</p>
+            <ul>
+              <li><code>https://nan-feng-24.github.io/DayBook-Public/</code></li>
+            </ul>
+            <p>如果浏览器支持安装，首页右上会显示安装卡片。</p>
+            <p>你可以：</p>
+            <ul>
+              <li>点击 <code>安装</code></li>
+              <li>或点击 <code>查看说明</code></li>
+            </ul>
+            <p>安装后可以：</p>
+            <ul>
+              <li>从桌面快捷方式打开</li>
+              <li>更像独立应用一样使用</li>
+            </ul>
+            <h4>电脑安装步骤</h4>
+            <h4>Edge</h4>
+            <ol>
+              <li>打开公开网址</li>
+              <li>点击右上角 <code>...</code></li>
+              <li>进入 <code>Apps</code></li>
+              <li>点击 <code>Install this site as an app</code></li>
+              <li>确认安装</li>
+            </ol>
+            <h4>Chrome</h4>
+            <ol>
+              <li>打开公开网址</li>
+              <li>查看地址栏右侧是否有安装图标</li>
+              <li>如果有，直接点击安装</li>
+              <li>如果没有，点击右上角菜单</li>
+              <li>选择 <code>Install page as app</code></li>
+            </ol>
+            <h4>手机安装步骤</h4>
+            <h4>Android</h4>
+            <ol>
+              <li>用浏览器打开公开网址</li>
+              <li>点击浏览器菜单</li>
+              <li>选择 <code>Install app</code> 或 <code>Add to Home screen</code></li>
+              <li>确认安装</li>
+            </ol>
+            <h4>iPhone</h4>
+            <ol>
+              <li>用 Safari 打开公开网址</li>
+              <li>点击 <code>分享</code></li>
+              <li>选择 <code>Add to Home Screen</code></li>
+              <li>确认添加</li>
+            </ol>
+          </section>
+
+          <section id="manual-storage" class="manual-section">
+            <h3>12. 数据保存说明</h3>
+            <p>项目数据默认保存在当前浏览器本地。</p>
+            <p>这意味着：</p>
+            <ul>
+              <li>换浏览器后，数据不会自动同步</li>
+              <li>清除浏览器站点数据后，数据可能丢失</li>
+              <li>换电脑后，数据不会自动带过去</li>
+            </ul>
+            <p>建议：</p>
+            <ul>
+              <li>定期使用 <code>导出备份</code></li>
+              <li>在做大改动前先留一份备份</li>
+            </ul>
+          </section>
+
+          <section id="manual-tips" class="manual-section">
+            <h3>13. 常见使用建议</h3>
+            <ul>
+              <li>每天先在日度视图写下当天任务</li>
+              <li>每月在月度视图记录阶段目标</li>
+              <li>晚上花 1 分钟写日度复盘</li>
+              <li>重要数据定期导出备份</li>
+              <li>寄语库只保留自己真正想看到的内容</li>
+            </ul>
+          </section>
+
+          <section id="manual-faq" class="manual-section">
+            <h3>14. 常见问题</h3>
+            <h4>1. 为什么换浏览器后内容没了？</h4>
+            <p>因为数据默认保存在当前浏览器本地，不会自动跨浏览器同步。</p>
+            <h4>2. 为什么页面更新后显示异常？</h4>
+            <p>可能是缓存还没刷新。可以尝试：</p>
+            <ul>
+              <li>强制刷新浏览器</li>
+              <li>关闭后重新打开页面</li>
+            </ul>
+            <h4>3. 为什么安装按钮没有出现？</h4>
+            <p>可能原因：</p>
+            <ul>
+              <li>当前浏览器不支持</li>
+              <li>当前打开方式不满足安装条件</li>
+              <li>浏览器暂未给出安装提示</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>
+  </aside>
+
   <div id="announcementModal" class="announcement-modal" hidden>
     <div id="announcementBackdrop" class="announcement-backdrop" aria-hidden="true"></div>
     <section class="announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="announcementTitle">
       <header class="announcement-header">
         <div class="announcement-title-block">
           <span class="announcement-kicker">版本更新</span>
-          <h2 id="announcementTitle" class="announcement-title">日行小记 0.1.10</h2>
-          <p class="announcement-subtitle">本次更新主要完善了寄语功能，并补充了更新公告与数据恢复能力。</p>
+          <h2 id="announcementTitle" class="announcement-title">日行小记 0.1.11</h2>
+          <p class="announcement-subtitle">本次更新在原有寄语、公告与恢复能力基础上，继续补充了页内用户手册与帮助联动体验。</p>
         </div>
         <button id="announcementCloseBtn" class="announcement-close" type="button" aria-label="关闭更新公告">×</button>
       </header>
@@ -313,6 +684,11 @@
             <li>寄语支持隐藏不想再看到的句子。</li>
             <li>新增寄语管理功能，常用内容可以自行整理。</li>
             <li>补充数据恢复能力，误操作后更容易找回此前内容。</li>
+            <li>新增页内用户手册入口，可直接在页面内查看完整使用说明。</li>
+            <li>新增用户手册浮层面板，集中整理打开方式、任务管理、复盘、备份、安装等说明。</li>
+            <li>补充页面区域与手册章节联动，点击安装、更新、复盘、日历时间轴、寄语、备份等区域可更快定位到对应说明。</li>
+            <li>安装说明入口改为优先在手册中查看，减少零散弹窗，步骤说明更完整。</li>
+            <li>优化手册导航与移动端阅读体验，查找功能说明更顺手。</li>
           </ul>
         </section>
       </div>
@@ -324,6 +700,6 @@
     </section>
   </div>
 
-  <script src="./assets/app.js?v=0.1.10"></script>
+  <script src="./assets/app.js?v=0.1.11"></script>
 </body>
 </html>
