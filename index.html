@@ -11,6 +11,12 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <title>日行小记</title>
+  <script>
+    if (window.location.protocol !== "file:" && /\/index\.html$/i.test(window.location.pathname)) {
+      const normalizedPath = window.location.pathname.replace(/\/index\.html$/i, "/");
+      window.location.replace(`${window.location.origin}${normalizedPath}${window.location.search}${window.location.hash}`);
+    }
+  </script>
     <link rel="stylesheet" href="./assets/styles.css?v=0.1.11">
 </head>
 <body>
@@ -690,6 +696,7 @@
             <li>安装说明入口改为优先在手册中查看，减少零散弹窗，步骤说明更完整。</li>
             <li>优化手册导航与移动端阅读体验，查找功能说明更顺手。</li>
             <li>优化首次打开链接时的缓存与资源加载策略，减少初次进入需要手动刷新的情况。</li>
+            <li>统一网页正式访问入口，访问 <code>/index.html</code> 时会自动回到主页地址，减少两条路径分别缓存导致的显示差异。</li>
           </ul>
         </section>
       </div>
