@@ -216,6 +216,16 @@
       "manual-tips",
       "manual-faq"
     ];
+    const MANUAL_SECTION_LINKS = [
+      { selector: "#installHelpBtn, #installAppBtn, #installCard", sectionId: "manual-install" },
+      { selector: "#announcementTrigger", sectionId: "manual-update" },
+      { selector: "#dailyView .review-panel, #monthlyView .review-panel", sectionId: "manual-review" },
+      { selector: ".timeline-panel, .calendar-card", sectionId: "manual-calendar-timeline" },
+      { selector: "#dailyView .composer, #dailyView .settings-panel, #dailyView .task-panel", sectionId: "manual-daily" },
+      { selector: "#monthlyView .composer, #monthlyView .month-card, #monthlyView .task-panel", sectionId: "manual-monthly" },
+      { selector: ".quote-card, .visual-card, .hero-band", sectionId: "manual-quote" },
+      { selector: ".backup-actions", sectionId: "manual-backup" }
+    ];
     let tasks = loadTasks();
     let settings = loadSettings();
     let quoteLibrary = loadQuoteLibrary();
@@ -437,6 +447,7 @@
       manualCloseBtn.addEventListener("click", () => setManualOpen(false));
       manualNav.addEventListener("click", handleManualNavClick);
       manualNav.addEventListener("wheel", handleManualNavWheel, { passive: false });
+      document.addEventListener("click", handleManualContextClick);
       document.addEventListener("keydown", handleManualKeydown);
       syncManualActiveState(MANUAL_DEFAULT_SECTION);
     }
@@ -505,6 +516,33 @@
       if (event.key === "Escape" && manualDock && !manualDock.hidden && announcementModal.hidden) {
         setManualOpen(false);
       }
+    }
+
+    function handleManualContextClick(event) {
+      if (
+        !manualDock ||
+        manualDock.hidden ||
+        manualDock.contains(event.target) ||
+        announcementModal.contains(event.target)
+      ) {
+        return;
+      }
+
+      const sectionId = getManualSectionFromTarget(event.target);
+      if (!sectionId) {
+        return;
+      }
+
+      focusManualSection(sectionId, { forceHighlight: true });
+    }
+
+    function getManualSectionFromTarget(target) {
+      if (!(target instanceof Element)) {
+        return "";
+      }
+
+      const matched = MANUAL_SECTION_LINKS.find((item) => target.closest(item.selector));
+      return matched ? matched.sectionId : "";
     }
 
     function toggleManual() {
