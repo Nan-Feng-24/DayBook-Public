@@ -9,7 +9,61 @@
     const SNAPSHOT_LIMIT = 5;
     const LEGACY_STORAGE_KEY = "daily-note-tasks";
     const ANNOUNCEMENT_VERSION = "0.1.11";
-    const ANNOUNCEMENT_READ_KEY = "daily-note-announcement-read-v1";
+    const ANNOUNCEMENT_ID = "0.1.11-patch-20260531-announcement-panel";
+    const ANNOUNCEMENT_READ_KEY = "daily-note-announcement-read-v2";
+    const ANNOUNCEMENT_DEFAULT_TAB_KEY = "daily-note-announcement-default-tab-v1";
+    const ANNOUNCEMENT_PATCH = {
+      id: ANNOUNCEMENT_ID,
+      title: "0.1.11 当前补丁更新",
+      summary: "这次补丁把公告入口重构为补丁类 / 消息类双通道，并补齐了补丁类公告内容，避免用户点开后看到空状态。",
+      items: [
+        "公告面板改成单入口双通道结构，进入后可在“补丁类 / 消息类”之间切换查看。",
+        "补丁类公告现在直接展示最近一次补丁的具体内容，不再和消息公告混在一起。",
+        "消息类公告改成胶囊列表，默认展示最近 3 条，点击单条后可查看详细内容。",
+        "在公告面板标题旁加入设置入口，允许用户决定“全部已读后默认先打开补丁类还是消息类”。",
+        "公告入口未读状态现在会综合补丁类和消息类，避免有新内容时被静默埋掉。"
+      ]
+    };
+    const ANNOUNCEMENT_MESSAGES = [
+      {
+        id: "message-2026-05-31-panel-structure",
+        title: "公告面板结构调整说明",
+        time: "刚刚",
+        body: [
+          "公告入口现在只保留一个，但面板内部会分成“补丁类”和“消息类”两个通道。",
+          "补丁类更适合看最近一次改了什么；消息类更适合看提醒、通知或说明类内容。",
+          "如果后面还有新的消息公告，会按时间向下顶，旧消息不会被补丁类内容覆盖掉。"
+        ]
+      },
+      {
+        id: "message-2026-05-31-default-tab",
+        title: "全部已读后的默认打开方式已支持设置",
+        time: "今天",
+        body: [
+          "当补丁类和消息类都没有未读内容时，用户可以自己决定点击公告后默认先进入哪个通道。",
+          "这个设置只影响“全部已读”的情况；一旦有未读内容，系统仍然会优先按未读规则决定落在哪一栏。"
+        ]
+      },
+      {
+        id: "message-2026-05-30-entry-rule",
+        title: "公告入口的提醒规则已收敛",
+        time: "昨天",
+        body: [
+          "补丁类有新内容时，公告入口会优先按补丁类提醒。",
+          "只有消息类有新内容时，公告入口才会优先按消息类提醒。",
+          "这样可以减少同一个入口承担太多语义时带来的混乱感。"
+        ]
+      },
+      {
+        id: "message-2026-05-29-backup-tip",
+        title: "使用提醒：重要内容仍建议定期导出备份",
+        time: "2 天前",
+        body: [
+          "公告结构已经调整，但数据仍然保存在当前浏览器里。",
+          "如果你的内容比较重要，仍然建议定期使用“导出备份”保留一份快照。"
+        ]
+      }
+    ];
     const todayKey = formatDateKey(new Date());
     const defaultMonthKey = todayKey.slice(0, 7);
     const DEFAULT_QUOTES = {
@@ -148,6 +202,31 @@
     const announcementCloseBtn = document.getElementById("announcementCloseBtn");
     const announcementDismissBtn = document.getElementById("announcementDismissBtn");
     const announcementMarkReadBtn = document.getElementById("announcementMarkReadBtn");
+    const announcementSettingsBtn = document.getElementById("announcementSettingsBtn");
+    const announcementSettingsPanel = document.getElementById("announcementSettingsPanel");
+    const announcementDefaultPatchBtn = document.getElementById("announcementDefaultPatchBtn");
+    const announcementDefaultMessagesBtn = document.getElementById("announcementDefaultMessagesBtn");
+    const announcementTabPatch = document.getElementById("announcementTabPatch");
+    const announcementTabPatchDot = document.getElementById("announcementTabPatchDot");
+    const announcementTabMessages = document.getElementById("announcementTabMessages");
+    const announcementTabMessagesCount = document.getElementById("announcementTabMessagesCount");
+    const announcementPatchPanel = document.getElementById("announcementPatchPanel");
+    const announcementPatchTitle = document.getElementById("announcementPatchTitle");
+    const announcementPatchSummary = document.getElementById("announcementPatchSummary");
+    const announcementPatchList = document.getElementById("announcementPatchList");
+    const announcementPatchEmpty = document.getElementById("announcementPatchEmpty");
+    const announcementMessagesPanel = document.getElementById("announcementMessagesPanel");
+    const announcementMessagesList = document.getElementById("announcementMessagesList");
+    const announcementMessagesMoreBtn = document.getElementById("announcementMessagesMoreBtn");
+    const announcementMessageEmpty = document.getElementById("announcementMessageEmpty");
+    const announcementMessageDetailOverlay = document.getElementById("announcementMessageDetailOverlay");
+    const announcementDetailKicker = document.getElementById("announcementDetailKicker");
+    const announcementMessageDetailTitle = document.getElementById("announcementMessageDetailTitle");
+    const announcementMessageDetailMeta = document.getElementById("announcementMessageDetailMeta");
+    const announcementMessageDetailBody = document.getElementById("announcementMessageDetailBody");
+    const announcementMessageDetailCloseBtn = document.getElementById("announcementMessageDetailCloseBtn");
+    const announcementMessageDetailBackBtn = document.getElementById("announcementMessageDetailBackBtn");
+    const announcementMessageDetailMarkReadBtn = document.getElementById("announcementMessageDetailMarkReadBtn");
     const installCard = document.getElementById("installCard");
     const installNote = document.getElementById("installNote");
     const installAppBtn = document.getElementById("installAppBtn");
@@ -232,7 +311,12 @@
     let quoteState = loadQuoteState();
     let reviews = loadReviews();
     let deferredInstallPrompt = null;
-    let announcementReadVersion = loadAnnouncementReadVersion();
+    let announcementReadState = loadAnnouncementReadState();
+    let announcementDefaultTab = loadAnnouncementDefaultTab();
+    let activeAnnouncementTab = "patch";
+    let selectedAnnouncementMessageId = getFirstAnnouncementMessageId();
+    let announcementShowAllMessages = false;
+    let isAnnouncementSettingsOpen = false;
     let manualToggleBtn = null;
     let activeManualSectionId = MANUAL_DEFAULT_SECTION;
 
@@ -356,6 +440,16 @@
     announcementBackdrop.addEventListener("click", closeAnnouncementModal);
     announcementDismissBtn.addEventListener("click", closeAnnouncementModal);
     announcementMarkReadBtn.addEventListener("click", handleAnnouncementPrimaryAction);
+    announcementSettingsBtn.addEventListener("click", toggleAnnouncementSettings);
+    announcementTabPatch.addEventListener("click", () => switchAnnouncementTab("patch"));
+    announcementTabMessages.addEventListener("click", () => switchAnnouncementTab("messages"));
+    announcementDefaultPatchBtn.addEventListener("click", () => updateAnnouncementDefaultTab("patch"));
+    announcementDefaultMessagesBtn.addEventListener("click", () => updateAnnouncementDefaultTab("messages"));
+    announcementMessagesMoreBtn.addEventListener("click", showAllAnnouncementMessages);
+    announcementMessagesList.addEventListener("click", handleAnnouncementMessageClick);
+    announcementMessageDetailCloseBtn.addEventListener("click", closeAnnouncementMessageDetail);
+    announcementMessageDetailBackBtn.addEventListener("click", closeAnnouncementMessageDetail);
+    announcementMessageDetailMarkReadBtn.addEventListener("click", handleAnnouncementMessageDetailPrimaryAction);
     refreshQuoteBtn.addEventListener("click", refreshQuoteForCurrentView);
     editQuoteBtn.addEventListener("click", editQuoteForCurrentView);
     saveQuoteBtn.addEventListener("click", saveCurrentQuoteToLibrary);
@@ -376,65 +470,436 @@
       return `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
     }
 
-    function loadAnnouncementReadVersion() {
+    function getDefaultAnnouncementReadState() {
+      return {
+        patchId: "",
+        messageIds: []
+      };
+    }
+
+    function loadAnnouncementReadState() {
       try {
         const raw = localStorage.getItem(ANNOUNCEMENT_READ_KEY);
-        return typeof raw === "string" ? raw : "";
+        if (!raw) {
+          return getDefaultAnnouncementReadState();
+        }
+
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") {
+          return getDefaultAnnouncementReadState();
+        }
+
+        return {
+          patchId: typeof parsed.patchId === "string" ? parsed.patchId : "",
+          messageIds: Array.isArray(parsed.messageIds)
+            ? parsed.messageIds.filter((id) => typeof id === "string")
+            : []
+        };
       } catch (error) {
-        return "";
+        try {
+          const legacy = localStorage.getItem(ANNOUNCEMENT_READ_KEY);
+          if (typeof legacy === "string" && legacy) {
+            return {
+              patchId: legacy,
+              messageIds: []
+            };
+          }
+        } catch (storageError) {
+          // Ignore storage failures.
+        }
+
+        return getDefaultAnnouncementReadState();
       }
     }
 
+    function saveAnnouncementReadState() {
+      try {
+        localStorage.setItem(ANNOUNCEMENT_READ_KEY, JSON.stringify(announcementReadState));
+      } catch (error) {
+        // Ignore storage failures and keep UI state in memory.
+      }
+    }
+
+    function loadAnnouncementDefaultTab() {
+      try {
+        const raw = localStorage.getItem(ANNOUNCEMENT_DEFAULT_TAB_KEY);
+        return raw === "messages" ? "messages" : "patch";
+      } catch (error) {
+        return "patch";
+      }
+    }
+
+    function saveAnnouncementDefaultTab() {
+      try {
+        localStorage.setItem(ANNOUNCEMENT_DEFAULT_TAB_KEY, announcementDefaultTab);
+      } catch (error) {
+        // Ignore storage failures and keep UI state in memory.
+      }
+    }
+
+    function hasPatchAnnouncement() {
+      return Array.isArray(ANNOUNCEMENT_PATCH.items) && ANNOUNCEMENT_PATCH.items.length > 0;
+    }
+
+    function getFirstAnnouncementMessageId() {
+      return ANNOUNCEMENT_MESSAGES[0] ? ANNOUNCEMENT_MESSAGES[0].id : "";
+    }
+
+    function getAnnouncementMessageById(messageId) {
+      return ANNOUNCEMENT_MESSAGES.find((message) => message.id === messageId) || null;
+    }
+
+    function getFirstUnreadAnnouncementMessageId() {
+      const unreadMessage = ANNOUNCEMENT_MESSAGES.find((message) => isAnnouncementMessageUnread(message.id));
+      return unreadMessage ? unreadMessage.id : getFirstAnnouncementMessageId();
+    }
+
+    function isPatchAnnouncementUnread() {
+      return hasPatchAnnouncement() && announcementReadState.patchId !== ANNOUNCEMENT_PATCH.id;
+    }
+
+    function isAnnouncementMessageUnread(messageId) {
+      return !announcementReadState.messageIds.includes(messageId);
+    }
+
+    function getUnreadAnnouncementMessageCount() {
+      return ANNOUNCEMENT_MESSAGES.filter((message) => isAnnouncementMessageUnread(message.id)).length;
+    }
+
+    function hasUnreadAnnouncementMessages() {
+      return getUnreadAnnouncementMessageCount() > 0;
+    }
+
     function isAnnouncementUnread() {
-      return announcementReadVersion !== ANNOUNCEMENT_VERSION;
+      return isPatchAnnouncementUnread() || hasUnreadAnnouncementMessages();
+    }
+
+    function getInitialAnnouncementTab() {
+      if (isPatchAnnouncementUnread()) {
+        return "patch";
+      }
+
+      if (hasUnreadAnnouncementMessages()) {
+        return "messages";
+      }
+
+      return announcementDefaultTab;
+    }
+
+    function ensureAnnouncementMessageSelection() {
+      if (!ANNOUNCEMENT_MESSAGES.length) {
+        selectedAnnouncementMessageId = "";
+        return;
+      }
+
+      if (getAnnouncementMessageById(selectedAnnouncementMessageId)) {
+        return;
+      }
+
+      selectedAnnouncementMessageId = getFirstUnreadAnnouncementMessageId();
     }
 
     function renderAnnouncementTrigger() {
       const unread = isAnnouncementUnread();
-      announcementTrigger.textContent = unread ? "未读更新" : ANNOUNCEMENT_VERSION;
+      announcementTrigger.textContent = unread ? "新公告" : "公告";
       announcementTrigger.classList.toggle("unread", unread);
       announcementTrigger.classList.toggle("read", !unread);
       announcementTrigger.setAttribute(
         "aria-label",
-        unread ? `查看 ${ANNOUNCEMENT_VERSION} 未读更新` : `查看当前版本 ${ANNOUNCEMENT_VERSION} 更新公告`
+        unread ? `查看 ${ANNOUNCEMENT_VERSION} 新公告` : `查看 ${ANNOUNCEMENT_VERSION} 公告详情`
       );
       announcementDismissBtn.textContent = unread ? "稍后再看" : "关闭";
-      announcementMarkReadBtn.textContent = unread ? "标记已读" : "关闭公告";
+
+      if (activeAnnouncementTab === "patch") {
+        announcementMarkReadBtn.textContent = isPatchAnnouncementUnread() ? "标记补丁已读" : "关闭公告";
+      } else {
+        const selectedMessage = getAnnouncementMessageById(selectedAnnouncementMessageId);
+        announcementMarkReadBtn.textContent = selectedMessage && isAnnouncementMessageUnread(selectedMessage.id)
+          ? "标记本条已读"
+          : "关闭公告";
+      }
+    }
+
+    function renderAnnouncementSettings() {
+      announcementSettingsPanel.hidden = !isAnnouncementSettingsOpen;
+      announcementDefaultPatchBtn.classList.toggle("active", announcementDefaultTab === "patch");
+      announcementDefaultMessagesBtn.classList.toggle("active", announcementDefaultTab === "messages");
+    }
+
+    function renderAnnouncementTabs() {
+      const patchActive = activeAnnouncementTab === "patch";
+      const unreadMessageCount = getUnreadAnnouncementMessageCount();
+
+      announcementTabPatch.classList.toggle("active", patchActive);
+      announcementTabPatch.setAttribute("aria-selected", String(patchActive));
+      announcementTabMessages.classList.toggle("active", !patchActive);
+      announcementTabMessages.setAttribute("aria-selected", String(!patchActive));
+
+      announcementTabPatchDot.hidden = !isPatchAnnouncementUnread();
+      announcementTabMessagesCount.hidden = unreadMessageCount === 0;
+      announcementTabMessagesCount.textContent = String(unreadMessageCount);
+    }
+
+    function renderPatchAnnouncementPanel() {
+      const hasPatch = hasPatchAnnouncement();
+      announcementPatchPanel.hidden = activeAnnouncementTab !== "patch";
+      announcementPatchEmpty.hidden = activeAnnouncementTab !== "patch" || hasPatch;
+
+      if (!hasPatch) {
+        announcementPatchTitle.textContent = "";
+        announcementPatchSummary.textContent = "";
+        announcementPatchList.innerHTML = "";
+        return;
+      }
+
+      announcementPatchTitle.textContent = ANNOUNCEMENT_PATCH.title;
+      announcementPatchSummary.textContent = ANNOUNCEMENT_PATCH.summary;
+      announcementPatchList.innerHTML = ANNOUNCEMENT_PATCH.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    }
+
+    function renderAnnouncementMessagesList() {
+      const visibleMessages = announcementShowAllMessages ? ANNOUNCEMENT_MESSAGES : ANNOUNCEMENT_MESSAGES.slice(0, 3);
+      announcementMessagesList.innerHTML = visibleMessages.map((message) => {
+        const unread = isAnnouncementMessageUnread(message.id);
+        const active = selectedAnnouncementMessageId === message.id;
+        const statusText = unread ? "未读" : "已读";
+        return `
+          <button class="announcement-message-item ${unread ? "unread" : "read"} ${active ? "active" : ""}" type="button" data-announcement-message="${message.id}">
+            <span class="announcement-message-dot" aria-hidden="true"></span>
+            <span class="announcement-message-main">
+              <span class="announcement-message-title">${escapeHtml(message.title)}</span>
+              <span class="announcement-message-meta">${escapeHtml(message.time)} · ${statusText}</span>
+            </span>
+            <span class="announcement-message-arrow" aria-hidden="true">›</span>
+          </button>
+        `;
+      }).join("");
+
+      announcementMessagesMoreBtn.hidden = ANNOUNCEMENT_MESSAGES.length <= 3 || announcementShowAllMessages;
+    }
+
+    function renderMessagesAnnouncementPanel() {
+      announcementMessagesPanel.hidden = activeAnnouncementTab !== "messages";
+      ensureAnnouncementMessageSelection();
+      renderAnnouncementMessagesList();
+      announcementMessageEmpty.hidden = activeAnnouncementTab !== "messages" || ANNOUNCEMENT_MESSAGES.length > 0;
+    }
+
+    function renderAnnouncementModal() {
+      renderAnnouncementSettings();
+      renderAnnouncementTabs();
+      renderPatchAnnouncementPanel();
+      renderMessagesAnnouncementPanel();
+      renderAnnouncementDetailOverlay();
+      renderAnnouncementTrigger();
     }
 
     function initAnnouncementSupport() {
       document.addEventListener("keydown", handleAnnouncementKeydown);
-      if (isAnnouncementUnread()) {
-        openAnnouncementModal();
-      }
+      document.addEventListener("click", handleAnnouncementDocumentClick);
     }
 
     function handleAnnouncementKeydown(event) {
       if (event.key === "Escape" && !announcementModal.hidden) {
+        if (isAnnouncementSettingsOpen) {
+          isAnnouncementSettingsOpen = false;
+          renderAnnouncementSettings();
+          return;
+        }
+
+        if (!announcementMessageDetailOverlay.hidden) {
+          closeAnnouncementMessageDetail();
+          return;
+        }
+
         closeAnnouncementModal();
       }
     }
 
+    function handleAnnouncementDocumentClick(event) {
+      if (
+        !isAnnouncementSettingsOpen ||
+        announcementModal.hidden ||
+        announcementSettingsPanel.contains(event.target) ||
+        announcementSettingsBtn.contains(event.target)
+      ) {
+        return;
+      }
+
+      isAnnouncementSettingsOpen = false;
+      renderAnnouncementSettings();
+    }
+
     function openAnnouncementModal() {
+      activeAnnouncementTab = getInitialAnnouncementTab();
+      selectedAnnouncementMessageId = getFirstUnreadAnnouncementMessageId();
+      announcementShowAllMessages = false;
+      isAnnouncementSettingsOpen = false;
+      renderAnnouncementModal();
       announcementModal.hidden = false;
       document.body.style.overflow = "hidden";
+
+      if (activeAnnouncementTab === "patch" && hasPatchAnnouncement()) {
+        openAnnouncementPatchDetail();
+      }
     }
 
     function closeAnnouncementModal() {
       announcementModal.hidden = true;
+      isAnnouncementSettingsOpen = false;
+      closeAnnouncementMessageDetail();
       document.body.style.overflow = "";
     }
 
-    function handleAnnouncementPrimaryAction() {
-      if (isAnnouncementUnread()) {
-        announcementReadVersion = ANNOUNCEMENT_VERSION;
-        try {
-          localStorage.setItem(ANNOUNCEMENT_READ_KEY, announcementReadVersion);
-        } catch (error) {
-          // Ignore storage failures and still allow the modal to close.
-        }
-        renderAnnouncementTrigger();
+    function toggleAnnouncementSettings() {
+      isAnnouncementSettingsOpen = !isAnnouncementSettingsOpen;
+      renderAnnouncementSettings();
+    }
+
+    function updateAnnouncementDefaultTab(tabName) {
+      announcementDefaultTab = tabName === "messages" ? "messages" : "patch";
+      saveAnnouncementDefaultTab();
+      renderAnnouncementSettings();
+    }
+
+    function switchAnnouncementTab(tabName) {
+      activeAnnouncementTab = tabName === "messages" ? "messages" : "patch";
+      ensureAnnouncementMessageSelection();
+      renderAnnouncementModal();
+
+      if (activeAnnouncementTab === "patch" && hasPatchAnnouncement()) {
+        openAnnouncementPatchDetail();
+        return;
       }
+
+      closeAnnouncementMessageDetail();
+    }
+
+    function showAllAnnouncementMessages() {
+      announcementShowAllMessages = true;
+      renderMessagesAnnouncementPanel();
+    }
+
+    function handleAnnouncementMessageClick(event) {
+      const button = event.target.closest("[data-announcement-message]");
+      if (!button) {
+        return;
+      }
+
+      selectedAnnouncementMessageId = button.dataset.announcementMessage;
+      openAnnouncementMessageDetail();
+    }
+
+    function markPatchAnnouncementAsRead() {
+      announcementReadState.patchId = ANNOUNCEMENT_PATCH.id;
+      saveAnnouncementReadState();
+    }
+
+    function markAnnouncementMessageAsRead(messageId) {
+      if (!messageId || announcementReadState.messageIds.includes(messageId)) {
+        return;
+      }
+
+      announcementReadState.messageIds = [...announcementReadState.messageIds, messageId];
+      saveAnnouncementReadState();
+    }
+
+    function renderAnnouncementDetailOverlay() {
+      if (activeAnnouncementTab === "patch") {
+        announcementDetailKicker.textContent = "补丁详情";
+        announcementMessageDetailBackBtn.textContent = "返回公告面板";
+
+        if (!hasPatchAnnouncement()) {
+          announcementMessageDetailTitle.textContent = "";
+          announcementMessageDetailMeta.textContent = "";
+          announcementMessageDetailBody.innerHTML = "";
+          announcementMessageDetailMarkReadBtn.textContent = "关闭详情";
+          return;
+        }
+
+        announcementMessageDetailTitle.textContent = ANNOUNCEMENT_PATCH.title;
+        announcementMessageDetailMeta.textContent = `${ANNOUNCEMENT_VERSION} · ${isPatchAnnouncementUnread() ? "未读" : "已读"}`;
+        announcementMessageDetailBody.innerHTML = [
+          `<p>${escapeHtml(ANNOUNCEMENT_PATCH.summary)}</p>`,
+          `<ul class="announcement-list">${ANNOUNCEMENT_PATCH.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        ].join("");
+        announcementMessageDetailMarkReadBtn.textContent = isPatchAnnouncementUnread() ? "标记补丁已读" : "关闭详情";
+        return;
+      }
+
+      const selectedMessage = getAnnouncementMessageById(selectedAnnouncementMessageId);
+      announcementDetailKicker.textContent = "消息详情";
+      announcementMessageDetailBackBtn.textContent = "返回消息列表";
+
+      if (!selectedMessage) {
+        announcementMessageDetailTitle.textContent = "";
+        announcementMessageDetailMeta.textContent = "";
+        announcementMessageDetailBody.innerHTML = "";
+        announcementMessageDetailMarkReadBtn.textContent = "标记本条已读";
+        return;
+      }
+
+      announcementMessageDetailTitle.textContent = selectedMessage.title;
+      announcementMessageDetailMeta.textContent = `${selectedMessage.time} · ${isAnnouncementMessageUnread(selectedMessage.id) ? "未读" : "已读"}`;
+      announcementMessageDetailBody.innerHTML = selectedMessage.body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("");
+      announcementMessageDetailMarkReadBtn.textContent = isAnnouncementMessageUnread(selectedMessage.id) ? "标记本条已读" : "关闭详情";
+    }
+
+    function openAnnouncementMessageDetail() {
+      renderAnnouncementDetailOverlay();
+      announcementMessageDetailOverlay.hidden = false;
+    }
+
+    function openAnnouncementPatchDetail() {
+      renderAnnouncementDetailOverlay();
+      announcementMessageDetailOverlay.hidden = false;
+    }
+
+    function closeAnnouncementMessageDetail() {
+      announcementMessageDetailOverlay.hidden = true;
+    }
+
+    function handleAnnouncementMessageDetailPrimaryAction() {
+      if (activeAnnouncementTab === "patch") {
+        if (isPatchAnnouncementUnread()) {
+          markPatchAnnouncementAsRead();
+          renderAnnouncementModal();
+          closeAnnouncementMessageDetail();
+          return;
+        }
+
+        closeAnnouncementMessageDetail();
+        return;
+      }
+
+      const selectedMessage = getAnnouncementMessageById(selectedAnnouncementMessageId);
+
+      if (selectedMessage && isAnnouncementMessageUnread(selectedMessage.id)) {
+        markAnnouncementMessageAsRead(selectedMessage.id);
+        renderAnnouncementModal();
+        closeAnnouncementMessageDetail();
+        return;
+      }
+
+      closeAnnouncementMessageDetail();
+    }
+
+    function handleAnnouncementPrimaryAction() {
+      if (activeAnnouncementTab === "patch" && isPatchAnnouncementUnread()) {
+        markPatchAnnouncementAsRead();
+        renderAnnouncementModal();
+        return;
+      }
+
+      if (activeAnnouncementTab === "messages") {
+        const selectedMessage = getAnnouncementMessageById(selectedAnnouncementMessageId);
+        if (selectedMessage && isAnnouncementMessageUnread(selectedMessage.id)) {
+          markAnnouncementMessageAsRead(selectedMessage.id);
+          renderAnnouncementModal();
+          return;
+        }
+      }
+
       closeAnnouncementModal();
     }
 
@@ -480,6 +945,10 @@
       manualToggleBtn.setAttribute("aria-expanded", "false");
       manualToggleBtn.addEventListener("click", toggleManual);
       heroLinks.appendChild(manualToggleBtn);
+
+      if (heroLinks.lastElementChild !== announcementTrigger) {
+        heroLinks.appendChild(announcementTrigger);
+      }
     }
 
     function handleManualNavClick(event) {

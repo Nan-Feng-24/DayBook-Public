@@ -176,7 +176,7 @@
       }
     })();
   </script>
-    <link rel="stylesheet" href="./assets/styles.css?v=0.1.11">
+  <link rel="stylesheet" href="./assets/styles.css?v=0.1.11.6">
 </head>
 <body>
   <main class="page">
@@ -189,7 +189,10 @@
               <div class="brand-copy">
                 <h1>日行小记</h1>
                 <p class="subtitle">记下想做的事，也记住认真生活的每一天。</p>
-                <button id="announcementTrigger" class="announcement-trigger unread" type="button" aria-haspopup="dialog" aria-controls="announcementModal">未读更新</button>
+                <div class="hero-links">
+                  <span class="version-pill" aria-label="当前版本 0.1.11">0.1.11</span>
+                  <button id="announcementTrigger" class="announcement-trigger unread" type="button" aria-haspopup="dialog" aria-controls="announcementModal">新公告</button>
+                </div>
               </div>
             </div>
           </div>
@@ -833,31 +836,76 @@
     <section class="announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="announcementTitle">
       <header class="announcement-header">
         <div class="announcement-title-block">
-          <span class="announcement-kicker">版本更新</span>
-          <h2 id="announcementTitle" class="announcement-title">日行小记 0.1.11</h2>
-          <p class="announcement-subtitle">本次更新在原有寄语、公告与恢复能力基础上，继续补充了页内用户手册与帮助联动体验。</p>
+          <span class="announcement-kicker">最新公告</span>
+          <h2 id="announcementTitle" class="announcement-title">公告面板</h2>
+          <p class="announcement-subtitle">补丁类展示最近一次补丁；消息类保留最近通知，点击单条消息可查看详情。</p>
         </div>
-        <button id="announcementCloseBtn" class="announcement-close" type="button" aria-label="关闭更新公告">×</button>
+        <div class="announcement-header-actions">
+          <button id="announcementSettingsBtn" class="announcement-settings-btn" type="button" aria-label="公告设置" aria-haspopup="dialog" aria-controls="announcementSettingsPanel">⚙</button>
+          <button id="announcementCloseBtn" class="announcement-close" type="button" aria-label="关闭更新公告">×</button>
+          <div id="announcementSettingsPanel" class="announcement-settings-panel" hidden>
+            <h3>全部已读后默认打开</h3>
+            <p>只有补丁类和消息类都没有未读内容时，才使用这个用户偏好。</p>
+            <div class="announcement-settings-options">
+              <button id="announcementDefaultPatchBtn" class="announcement-settings-pill" type="button">补丁类</button>
+              <button id="announcementDefaultMessagesBtn" class="announcement-settings-pill" type="button">消息类</button>
+            </div>
+          </div>
+        </div>
       </header>
 
       <div class="announcement-body">
-        <section class="announcement-section">
-          <h3>本次更新</h3>
-          <ul class="announcement-list">
-            <li>新增页面内更新公告入口，后续版本变化可直接在页面中查看。</li>
-            <li>寄语支持加入寄语库，方便保留喜欢的内容。</li>
-            <li>寄语支持隐藏不想再看到的句子。</li>
-            <li>新增寄语管理功能，常用内容可以自行整理。</li>
-            <li>补充数据恢复能力，误操作后更容易找回此前内容。</li>
-            <li>新增页内用户手册入口，可直接在页面内查看完整使用说明。</li>
-            <li>新增用户手册浮层面板，集中整理打开方式、任务管理、复盘、备份、安装等说明。</li>
-            <li>补充页面区域与手册章节联动，点击安装、更新、复盘、日历时间轴、寄语、备份等区域可更快定位到对应说明。</li>
-            <li>安装说明入口改为优先在手册中查看，减少零散弹窗，步骤说明更完整。</li>
-            <li>优化手册导航与移动端阅读体验，查找功能说明更顺手。</li>
-            <li>优化首次打开链接时的缓存与资源加载策略，减少初次进入需要手动刷新的情况。</li>
-            <li>统一网页正式访问入口，访问 <code>/index.html</code> 时会自动回到主页地址，减少两条路径分别缓存导致的显示差异。</li>
-          </ul>
+        <div class="announcement-tabs" role="tablist" aria-label="公告目录">
+          <button id="announcementTabPatch" class="announcement-tab active" type="button" role="tab" aria-selected="true" aria-controls="announcementPatchPanel">
+            <span>补丁类</span>
+            <span id="announcementTabPatchDot" class="announcement-tab-dot" aria-hidden="true"></span>
+          </button>
+          <button id="announcementTabMessages" class="announcement-tab" type="button" role="tab" aria-selected="false" aria-controls="announcementMessagesPanel">
+            <span>消息类</span>
+            <span id="announcementTabMessagesCount" class="announcement-tab-count" hidden>0</span>
+          </button>
+        </div>
+
+        <section id="announcementPatchPanel" class="announcement-panel" role="tabpanel" aria-labelledby="announcementTabPatch">
+          <div class="announcement-panel-head">
+            <h3>补丁类公告</h3>
+            <span class="announcement-panel-state">当前激活</span>
+          </div>
+          <div id="announcementPatchBox" class="announcement-patch-box">
+            <h4 id="announcementPatchTitle" class="announcement-patch-title"></h4>
+            <p id="announcementPatchSummary" class="announcement-text"></p>
+            <ul id="announcementPatchList" class="announcement-list"></ul>
+          </div>
+          <div id="announcementPatchEmpty" class="announcement-empty" hidden>当前没有补丁更新。</div>
         </section>
+
+        <section id="announcementMessagesPanel" class="announcement-panel" role="tabpanel" aria-labelledby="announcementTabMessages" hidden>
+          <div class="announcement-panel-head">
+            <h3>消息类公告</h3>
+            <span class="announcement-panel-state">最近 3 条</span>
+          </div>
+          <div id="announcementMessageEmpty" class="announcement-empty" hidden>当前没有消息公告。</div>
+          <div id="announcementMessagesList" class="announcement-messages-list"></div>
+          <button id="announcementMessagesMoreBtn" class="announcement-more-btn" type="button" hidden>查看更多历史消息</button>
+        </section>
+      </div>
+
+      <div id="announcementMessageDetailOverlay" class="announcement-message-detail-overlay" hidden>
+        <div class="announcement-message-detail-shell">
+          <header class="announcement-message-detail-top">
+            <div class="announcement-title-block">
+              <span id="announcementDetailKicker" class="announcement-kicker">消息详情</span>
+              <h3 id="announcementMessageDetailTitle" class="announcement-title announcement-detail-title"></h3>
+              <p id="announcementMessageDetailMeta" class="announcement-subtitle"></p>
+            </div>
+            <button id="announcementMessageDetailCloseBtn" class="announcement-close" type="button" aria-label="关闭消息详情">×</button>
+          </header>
+          <div id="announcementMessageDetailBody" class="announcement-message-detail-body"></div>
+          <footer class="announcement-message-detail-footer">
+            <button id="announcementMessageDetailBackBtn" class="announcement-secondary-btn" type="button">返回消息列表</button>
+            <button id="announcementMessageDetailMarkReadBtn" class="announcement-primary-btn" type="button">标记本条已读</button>
+          </footer>
+        </div>
       </div>
 
       <footer class="announcement-footer">
@@ -867,6 +915,6 @@
     </section>
   </div>
 
-  <script src="./assets/app.js?v=0.1.11.2"></script>
+  <script src="./assets/app.js?v=0.1.11.6"></script>
 </body>
 </html>

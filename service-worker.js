@@ -1,10 +1,10 @@
-const CACHE_NAME = "daily-note-shell-v8";
+const CACHE_NAME = "daily-note-shell-v12";
 const APP_SHELL_FILES = [
   "./",
   "./index.html",
   "./manifest.webmanifest?v=0.1.11",
-  "./assets/styles.css?v=0.1.11",
-  "./assets/app.js?v=0.1.11.2",
+  "./assets/styles.css?v=0.1.11.6",
+  "./assets/app.js?v=0.1.11.6",
   "./icon-192.png",
   "./icon-512.png",
   "./apple-touch-icon.png"
