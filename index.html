@@ -176,7 +176,7 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="./assets/styles.css?v=0.1.11.6">
+  <link rel="stylesheet" href="./assets/styles.css?v=0.1.11.7">
 </head>
 <body>
   <main class="page">
@@ -190,7 +190,7 @@
                 <h1>日行小记</h1>
                 <p class="subtitle">记下想做的事，也记住认真生活的每一天。</p>
                 <div class="hero-links">
-                  <span class="version-pill" aria-label="当前版本 0.1.11">0.1.11</span>
+                  <button id="versionInfoTrigger" class="version-pill version-pill-button" type="button" aria-haspopup="dialog" aria-controls="versionInfoModal" aria-label="查看当前版本 0.1.11 更新内容">0.1.11</button>
                   <button id="announcementTrigger" class="announcement-trigger unread" type="button" aria-haspopup="dialog" aria-controls="announcementModal">新公告</button>
                 </div>
               </div>
@@ -552,16 +552,17 @@
 
           <section id="manual-update" class="manual-section">
             <h3>4. 更新公告怎么用</h3>
-            <p>如果当前版本有新内容，首页会显示：</p>
+            <p>首页现在保留两个相关入口：</p>
             <ul>
-              <li><code>未读更新</code></li>
+              <li><code>0.1.11</code>：随时可点开，查看当前版本相对上一版本的变化</li>
+              <li><code>新公告</code>：用于查看最近的补丁提醒和消息通知</li>
             </ul>
-            <p>点击后会弹出版本公告。</p>
+            <p>点击后会弹出对应面板。</p>
             <p>使用规则：</p>
             <ul>
-              <li>只打开公告，不会自动算已读</li>
-              <li>点击 <code>标记已读</code> 后，入口会变成当前版本号</li>
-              <li>新版本发布后，会再次显示 <code>未读更新</code></li>
+              <li>版本号入口不参与已读状态，主要用于长期保留本版本更新说明</li>
+              <li>公告入口只负责最近补丁和消息提醒，只打开公告不会自动算已读</li>
+              <li>有新补丁或新消息时，公告入口会再次显示提醒状态</li>
             </ul>
           </section>
 
@@ -831,6 +832,47 @@
     </div>
   </aside>
 
+  <div id="versionInfoModal" class="announcement-modal" hidden>
+    <div id="versionInfoBackdrop" class="announcement-backdrop" aria-hidden="true"></div>
+    <section class="announcement-dialog version-info-dialog" role="dialog" aria-modal="true" aria-labelledby="versionInfoTitle">
+      <header class="announcement-header">
+        <div class="announcement-title-block">
+          <span class="announcement-kicker">版本更新</span>
+          <h2 id="versionInfoTitle" class="announcement-title">日行小记 0.1.11</h2>
+          <p class="announcement-subtitle">本次更新围绕寄语扩展出公告、恢复、手册与页内说明能力，并进一步补强了更新查看、消息提醒和使用指引的一体化体验。</p>
+        </div>
+        <button id="versionInfoCloseBtn" class="announcement-close" type="button" aria-label="关闭版本更新">×</button>
+      </header>
+
+      <div class="announcement-body">
+        <section class="version-info-section">
+          <h3>本次更新</h3>
+          <ul class="announcement-list">
+            <li>新增页面内更新公告入口，后续版本变化可直接在页面中查看。</li>
+            <li>寄语支持加入寄语库，方便保留喜欢的内容。</li>
+            <li>寄语支持隐藏不想再看到的句子。</li>
+            <li>新增寄语管理功能，常用内容可以自行整理。</li>
+            <li>补充数据恢复能力，误操作后更容易找回此前内容。</li>
+            <li>新增页内用户手册入口，可直接在页面内查看完整使用说明。</li>
+            <li>新增用户手册浮层面板，集中整理打开方式、任务管理、复盘、备份、安装等说明。</li>
+            <li>补充页面区域与手册章节联动，点击安装、更新、复盘、日历时间轴、寄语、备份等区域可更快定位到对应说明。</li>
+            <li>安装说明入口改为优先在手册中查看，减少零散弹窗，步骤说明更完整。</li>
+            <li>优化手册导航与移动端阅读体验，查找功能说明更顺手。</li>
+            <li>优化首次打开链接时的缓存与资源加载策略，减少初次进入需要手动刷新的情况。</li>
+            <li>统一网页正式访问入口，访问 <code>/index.html</code> 时会自动回到主页地址，减少两条路径分别缓存导致的显示差异。</li>
+            <li>首页更新说明拆分为两个入口：版本号长期保留当前版本说明，公告入口专门处理最近补丁和消息提醒。</li>
+            <li>公告面板调整为“补丁类 / 消息类”双通道，补丁直接展示最近一次更新内容，消息改为胶囊列表并支持展开查看详情</li>
+            <li>公告提醒与设置同步补强：支持补丁/消息未读区分，并允许用户在全部已读后自定义默认打开通道。</li>
+          </ul>
+        </section>
+      </div>
+
+      <footer class="announcement-footer">
+        <button id="versionInfoDismissBtn" class="announcement-primary-btn" type="button">关闭</button>
+      </footer>
+    </section>
+  </div>
+
   <div id="announcementModal" class="announcement-modal" hidden>
     <div id="announcementBackdrop" class="announcement-backdrop" aria-hidden="true"></div>
     <section class="announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="announcementTitle">
@@ -915,6 +957,6 @@
     </section>
   </div>
 
-  <script src="./assets/app.js?v=0.1.11.6"></script>
+  <script src="./assets/app.js?v=0.1.11.7"></script>
 </body>
 </html>

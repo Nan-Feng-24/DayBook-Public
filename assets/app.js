@@ -196,6 +196,11 @@
     const importFileInput = document.getElementById("importFileInput");
     const currentDate = document.getElementById("currentDate");
     const focusSummary = document.getElementById("focusSummary");
+    const versionInfoTrigger = document.getElementById("versionInfoTrigger");
+    const versionInfoModal = document.getElementById("versionInfoModal");
+    const versionInfoBackdrop = document.getElementById("versionInfoBackdrop");
+    const versionInfoCloseBtn = document.getElementById("versionInfoCloseBtn");
+    const versionInfoDismissBtn = document.getElementById("versionInfoDismissBtn");
     const announcementTrigger = document.getElementById("announcementTrigger");
     const announcementModal = document.getElementById("announcementModal");
     const announcementBackdrop = document.getElementById("announcementBackdrop");
@@ -297,7 +302,7 @@
     ];
     const MANUAL_SECTION_LINKS = [
       { selector: "#installHelpBtn, #installAppBtn, #installCard", sectionId: "manual-install" },
-      { selector: "#announcementTrigger", sectionId: "manual-update" },
+      { selector: "#announcementTrigger, #versionInfoTrigger", sectionId: "manual-update" },
       { selector: "#dailyView .review-panel, #monthlyView .review-panel", sectionId: "manual-review" },
       { selector: ".timeline-panel, .calendar-card", sectionId: "manual-calendar-timeline" },
       { selector: "#dailyView .composer, #dailyView .settings-panel, #dailyView .task-panel", sectionId: "manual-daily" },
@@ -435,6 +440,10 @@
     dangerHoursInput.addEventListener("change", saveSettingsFromInputs);
     installAppBtn.addEventListener("click", handleInstallApp);
     installHelpBtn.addEventListener("click", showInstallHelp);
+    versionInfoTrigger.addEventListener("click", openVersionInfoModal);
+    versionInfoCloseBtn.addEventListener("click", closeVersionInfoModal);
+    versionInfoBackdrop.addEventListener("click", closeVersionInfoModal);
+    versionInfoDismissBtn.addEventListener("click", closeVersionInfoModal);
     announcementTrigger.addEventListener("click", openAnnouncementModal);
     announcementCloseBtn.addEventListener("click", closeAnnouncementModal);
     announcementBackdrop.addEventListener("click", closeAnnouncementModal);
@@ -700,6 +709,11 @@
     }
 
     function handleAnnouncementKeydown(event) {
+      if (event.key === "Escape" && !versionInfoModal.hidden) {
+        closeVersionInfoModal();
+        return;
+      }
+
       if (event.key === "Escape" && !announcementModal.hidden) {
         if (isAnnouncementSettingsOpen) {
           isAnnouncementSettingsOpen = false;
@@ -713,6 +727,18 @@
         }
 
         closeAnnouncementModal();
+      }
+    }
+
+    function openVersionInfoModal() {
+      versionInfoModal.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeVersionInfoModal() {
+      versionInfoModal.hidden = true;
+      if (announcementModal.hidden) {
+        document.body.style.overflow = "";
       }
     }
 
@@ -731,6 +757,7 @@
     }
 
     function openAnnouncementModal() {
+      closeVersionInfoModal();
       activeAnnouncementTab = getInitialAnnouncementTab();
       selectedAnnouncementMessageId = getFirstUnreadAnnouncementMessageId();
       announcementShowAllMessages = false;
@@ -982,7 +1009,7 @@
     }
 
     function handleManualKeydown(event) {
-      if (event.key === "Escape" && manualDock && !manualDock.hidden && announcementModal.hidden) {
+      if (event.key === "Escape" && manualDock && !manualDock.hidden && announcementModal.hidden && versionInfoModal.hidden) {
         setManualOpen(false);
       }
     }
@@ -992,7 +1019,8 @@
         !manualDock ||
         manualDock.hidden ||
         manualDock.contains(event.target) ||
-        announcementModal.contains(event.target)
+        announcementModal.contains(event.target) ||
+        versionInfoModal.contains(event.target)
       ) {
         return;
       }

@@ -154,6 +154,19 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
     }
 
+    .version-pill-button {
+      cursor: pointer;
+      font: inherit;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+    }
+
+    .version-pill-button:hover,
+    .version-pill-button:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(47, 127, 109, 0.12);
+      outline: none;
+    }
+
     .announcement-trigger {
       display: inline-flex;
       align-items: center;
@@ -1607,6 +1620,16 @@
       color: var(--muted);
       font-size: 0.8rem;
       font-weight: 700;
+    }
+
+    .version-info-dialog .announcement-title {
+      margin-bottom: 6px;
+    }
+
+    .version-info-section h3 {
+      margin: 0 0 14px;
+      font-size: 1.16rem;
+      color: var(--accent-strong);
     }
 
     .announcement-patch-box {
