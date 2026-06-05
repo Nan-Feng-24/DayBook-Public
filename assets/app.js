@@ -7,59 +7,71 @@
     const REVIEW_KEY = "daily-note-reviews-v1";
     const SNAPSHOT_KEY = "daily-note-snapshots-v1";
     const SNAPSHOT_LIMIT = 5;
+    const APP_VERSION = "0.2.1";
+    const DEPLOY_BUILD = "20260605-1";
+    const LAST_SEEN_VERSION_KEY = "daily-note-last-seen-version-v1";
+    const LAST_EXPORT_AT_KEY = "daily-note-last-export-at-v1";
     const LEGACY_STORAGE_KEY = "daily-note-tasks";
-    const ANNOUNCEMENT_VERSION = "0.1.11";
-    const ANNOUNCEMENT_ID = "0.1.11-patch-20260531-announcement-panel";
+    const ANNOUNCEMENT_VERSION = "0.2.1";
+    const ANNOUNCEMENT_ID = "0.2.1-release-20260605-announcement-panel";
     const ANNOUNCEMENT_READ_KEY = "daily-note-announcement-read-v2";
     const ANNOUNCEMENT_DEFAULT_TAB_KEY = "daily-note-announcement-default-tab-v1";
     const ANNOUNCEMENT_PATCH = {
       id: ANNOUNCEMENT_ID,
-      title: "0.1.11 当前补丁更新",
-      summary: "这次补丁把公告入口重构为补丁类 / 消息类双通道，并补齐了补丁类公告内容，避免用户点开后看到空状态。",
+      publishedAt: "2026-06-05T09:00:00+08:00",
+      title: "0.2.1 当前版本更新",
+      summary: "本次更新围绕页面结构、公告查看、寄语整理和使用路径进行了集中优化，首页信息层次更清晰，常用入口更集中。",
       items: [
-        "公告面板改成单入口双通道结构，进入后可在“补丁类 / 消息类”之间切换查看。",
-        "补丁类公告现在直接展示最近一次补丁的具体内容，不再和消息公告混在一起。",
-        "消息类公告改成胶囊列表，默认展示最近 3 条，点击单条后可查看详细内容。",
-        "在公告面板标题旁加入设置入口，允许用户决定“全部已读后默认先打开补丁类还是消息类”。",
-        "公告入口未读状态现在会综合补丁类和消息类，避免有新内容时被静默埋掉。"
+        "优化了首页布局结构，常用功能入口集中展示，页面信息层次更清晰。",
+        "新增了侧边栏收起能力，便于在完整浏览与紧凑使用之间切换。",
+        "优化了版本说明入口位置，减少首屏占用，让任务与安排内容更聚焦。",
+        "新增了日度与月度顶部统计展示，任务完成情况查看更直观。",
+        "优化了公告面板结构，补丁类与消息类内容分开展示，查看路径更明确。",
+        "新增了公告默认打开通道设置，可按个人习惯选择优先查看内容。",
+        "优化了公告提醒规则，未读状态展示更加准确。",
+        "修复公告时间BUG",
+        "新增月度月份胶囊跳转选择器，支持快速切换到指定月份。",
+        "新增了寄语库独立入口，支持搜索、筛选、新增、隐藏与恢复整理。",
+        "优化了安装入口展示方式，改为按需打开，减少页面干扰。",
+        "完善了页面说明与用户手册联动，常用功能说明定位更方便。"
       ]
     };
     const ANNOUNCEMENT_MESSAGES = [
       {
-        id: "message-2026-06-05-upcoming-release",
-        title: "0.2.1 版本将于 2026 年 6 月 6 日更新",
-        time: "2026 年 6 月 5 日",
+        id: "message-2026-06-05-release-overview",
+        title: "0.2.1 版本已上线",
+        publishedAt: "2026-06-05T09:15:00+08:00",
         body: [
-          "日行小记 0.2.1 将于 2026 年 6 月 6 日上线，页面结构和部分功能体验会同步优化。",
-          "为避免更新过程中影响现有记录，建议你提前使用“导出备份”保存当前数据。"
+          "本次更新主要围绕页面结构、公告查看、寄语整理和使用路径进行了优化。",
+          "首页信息层次更清晰，常用入口更集中，任务与安排的查看路径也更明确。",
+          "如有重要内容，仍建议定期使用“导出备份”保留一份快照。"
         ]
       },
       {
-        id: "message-2026-05-31-default-tab",
-        title: "全部已读后的默认打开方式已支持设置",
-        time: "今天",
+        id: "message-2026-06-05-announcement-detail",
+        title: "公告与版本说明入口已完成整理",
+        publishedAt: "2026-06-05T09:30:00+08:00",
         body: [
-          "当补丁类和消息类都没有未读内容时，用户可以自己决定点击公告后默认先进入哪个通道。",
-          "这个设置只影响“全部已读”的情况；一旦有未读内容，系统仍然会优先按未读规则决定落在哪一栏。"
+          "版本说明入口用于长期查看当前版本更新内容，公告入口用于查看最近提醒和消息通知。",
+          "公告面板支持补丁类与消息类分开展示，全部已读后也可按习惯选择默认打开通道。"
         ]
       },
       {
-        id: "message-2026-05-30-entry-rule",
-        title: "公告入口的提醒规则已收敛",
-        time: "昨天",
+        id: "message-2026-06-05-quote-library",
+        title: "寄语库整理方式已优化",
+        publishedAt: "2026-06-05T10:00:00+08:00",
         body: [
-          "补丁类有新内容时，公告入口会优先按补丁类提醒。",
-          "只有消息类有新内容时，公告入口才会优先按消息类提醒。",
-          "这样可以减少同一个入口承担太多语义时带来的混乱感。"
+          "寄语库现已作为独立入口集中展示，支持搜索、筛选、新增、隐藏与恢复整理。",
+          "常用寄语的维护路径更清晰，也更适合长期使用。"
         ]
       },
       {
-        id: "message-2026-05-29-backup-tip",
+        id: "message-2026-06-05-backup-tip",
         title: "使用提醒：重要内容仍建议定期导出备份",
-        time: "2 天前",
+        publishedAt: "2026-06-05T10:20:00+08:00",
         body: [
-          "公告结构已经调整，但数据仍然保存在当前浏览器里。",
-          "如果你的内容比较重要，仍然建议定期使用“导出备份”保留一份快照。"
+          "当前数据仍保存在使用中的浏览器本地环境中。",
+          "更换浏览器、清理站点数据或调整重要内容前，建议先导出备份。"
         ]
       }
     ];
@@ -174,6 +186,13 @@
       calendarMonth: startOfMonth(new Date()),
       monthViewDate: startOfMonth(new Date())
     };
+    const storageLoadFailures = [];
+    const quoteLibraryUiState = {
+      filter: "all",
+      search: "",
+      sort: "status"
+    };
+    let activeQuoteLibraryEntries = [];
 
     const taskInput = document.getElementById("taskInput");
     const deadlineInput = document.getElementById("deadlineInput");
@@ -195,12 +214,15 @@
     const importFileInput = document.getElementById("importFileInput");
     const currentDate = document.getElementById("currentDate");
     const focusSummary = document.getElementById("focusSummary");
+    const currentDateDisplay = document.getElementById("currentDateDisplay");
+    const focusSummaryDisplay = document.getElementById("focusSummaryDisplay");
     const versionInfoTrigger = document.getElementById("versionInfoTrigger");
     const versionInfoModal = document.getElementById("versionInfoModal");
     const versionInfoBackdrop = document.getElementById("versionInfoBackdrop");
     const versionInfoCloseBtn = document.getElementById("versionInfoCloseBtn");
     const versionInfoDismissBtn = document.getElementById("versionInfoDismissBtn");
     const announcementTrigger = document.getElementById("announcementTrigger");
+    const announcementTriggerLabel = document.getElementById("announcementTriggerLabel");
     const announcementModal = document.getElementById("announcementModal");
     const announcementBackdrop = document.getElementById("announcementBackdrop");
     const announcementCloseBtn = document.getElementById("announcementCloseBtn");
@@ -215,11 +237,13 @@
     const announcementTabMessages = document.getElementById("announcementTabMessages");
     const announcementTabMessagesCount = document.getElementById("announcementTabMessagesCount");
     const announcementPatchPanel = document.getElementById("announcementPatchPanel");
+    const announcementPatchPanelState = document.getElementById("announcementPatchPanelState");
     const announcementPatchTitle = document.getElementById("announcementPatchTitle");
     const announcementPatchSummary = document.getElementById("announcementPatchSummary");
     const announcementPatchList = document.getElementById("announcementPatchList");
     const announcementPatchEmpty = document.getElementById("announcementPatchEmpty");
     const announcementMessagesPanel = document.getElementById("announcementMessagesPanel");
+    const announcementMessagesPanelState = document.getElementById("announcementMessagesPanelState");
     const announcementMessagesList = document.getElementById("announcementMessagesList");
     const announcementMessagesMoreBtn = document.getElementById("announcementMessagesMoreBtn");
     const announcementMessageEmpty = document.getElementById("announcementMessageEmpty");
@@ -231,11 +255,38 @@
     const announcementMessageDetailCloseBtn = document.getElementById("announcementMessageDetailCloseBtn");
     const announcementMessageDetailBackBtn = document.getElementById("announcementMessageDetailBackBtn");
     const announcementMessageDetailMarkReadBtn = document.getElementById("announcementMessageDetailMarkReadBtn");
+    const dailySidebarBtn = document.getElementById("dailySidebarBtn");
+    const monthlySidebarBtn = document.getElementById("monthlySidebarBtn");
+    const installSidebarBtn = document.getElementById("installSidebarBtn");
+    const settingsSidebarBtn = document.getElementById("settingsSidebarBtn");
+    const appShell = document.getElementById("appShell");
+    const appSidebar = document.getElementById("appSidebar");
+    const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
+    const installModal = document.getElementById("installModal");
+    const installBackdrop = document.getElementById("installBackdrop");
+    const installCloseBtn = document.getElementById("installCloseBtn");
+    const installDismissBtn = document.getElementById("installDismissBtn");
     const installCard = document.getElementById("installCard");
     const installNote = document.getElementById("installNote");
     const installAppBtn = document.getElementById("installAppBtn");
     const installHelpBtn = document.getElementById("installHelpBtn");
+    const settingsModal = document.getElementById("settingsModal");
+    const settingsBackdrop = document.getElementById("settingsBackdrop");
+    const settingsCloseBtn = document.getElementById("settingsCloseBtn");
+    const settingsDismissBtn = document.getElementById("settingsDismissBtn");
+    const defaultDeadlineTimeInput = document.getElementById("defaultDeadlineTimeInput");
+    const autoCarryOverInput = document.getElementById("autoCarryOverInput");
+    const showCompletedFutureInput = document.getElementById("showCompletedFutureInput");
+    const collapsedToolsInput = document.getElementById("collapsedToolsInput");
+    const safetyStatusBadge = document.getElementById("safetyStatusBadge");
+    const safetyVersionValue = document.getElementById("safetyVersionValue");
+    const safetyUpgradeSnapshotValue = document.getElementById("safetyUpgradeSnapshotValue");
+    const safetyLatestSnapshotValue = document.getElementById("safetyLatestSnapshotValue");
+    const safetyStorageStateValue = document.getElementById("safetyStorageStateValue");
+    const safetyStatusHint = document.getElementById("safetyStatusHint");
     const manualDock = document.getElementById("manualDock");
+    const manualToggleBtn = document.getElementById("manualToggleBtn");
+    const quoteLibrarySidebarBtn = document.getElementById("quoteLibrarySidebarBtn");
     const manualCloseBtn = document.getElementById("manualCloseBtn");
     const manualNav = document.getElementById("manualNav");
     const manualContent = document.getElementById("manualContent");
@@ -246,16 +297,38 @@
     const editQuoteBtn = document.getElementById("editQuoteBtn");
     const saveQuoteBtn = document.getElementById("saveQuoteBtn");
     const hideQuoteBtn = document.getElementById("hideQuoteBtn");
-    const manageQuoteBtn = document.getElementById("manageQuoteBtn");
+    const quoteLibraryModal = document.getElementById("quoteLibraryModal");
+    const quoteLibraryBackdrop = document.getElementById("quoteLibraryBackdrop");
+    const quoteLibraryCloseBtn = document.getElementById("quoteLibraryCloseBtn");
+    const quoteLibraryDismissBtn = document.getElementById("quoteLibraryDismissBtn");
+    const quoteLibraryTitle = document.getElementById("quoteLibraryTitle");
+    const quoteLibrarySubtitle = document.getElementById("quoteLibrarySubtitle");
+    const quoteLibraryCreateInput = document.getElementById("quoteLibraryCreateInput");
+    const quoteLibraryCreateBtn = document.getElementById("quoteLibraryCreateBtn");
+    const quoteLibrarySearchInput = document.getElementById("quoteLibrarySearchInput");
+    const quoteLibrarySortSelect = document.getElementById("quoteLibrarySortSelect");
+    const quoteLibraryFilters = document.getElementById("quoteLibraryFilters");
+    const quoteLibrarySummary = document.getElementById("quoteLibrarySummary");
+    const quoteLibraryEmpty = document.getElementById("quoteLibraryEmpty");
+    const quoteLibraryList = document.getElementById("quoteLibraryList");
     const dailyView = document.getElementById("dailyView");
     const monthlyView = document.getElementById("monthlyView");
     const dailyTabBtn = document.getElementById("dailyTabBtn");
     const monthlyTabBtn = document.getElementById("monthlyTabBtn");
+    const dailyStatsBar = document.getElementById("dailyStatsBar");
+    const monthlyStatsBar = document.getElementById("monthlyStatsBar");
     const prevMonthBtn = document.getElementById("prevMonthBtn");
     const nextMonthBtn = document.getElementById("nextMonthBtn");
     const calendarTitle = document.getElementById("calendarTitle");
     const calendarGrid = document.getElementById("calendarGrid");
     const monthViewTitle = document.getElementById("monthViewTitle");
+    const monthJumpPopover = document.getElementById("monthJumpPopover");
+    const monthJumpYearLabel = document.getElementById("monthJumpYearLabel");
+    const monthJumpGrid = document.getElementById("monthJumpGrid");
+    const monthJumpPrevYearBtn = document.getElementById("monthJumpPrevYearBtn");
+    const monthJumpNextYearBtn = document.getElementById("monthJumpNextYearBtn");
+    const monthJumpCurrentBtn = document.getElementById("monthJumpCurrentBtn");
+    const monthJumpCloseBtn = document.getElementById("monthJumpCloseBtn");
     const prevOverviewMonthBtn = document.getElementById("prevOverviewMonthBtn");
     const nextOverviewMonthBtn = document.getElementById("nextOverviewMonthBtn");
     const monthlyTaskInput = document.getElementById("monthlyTaskInput");
@@ -321,12 +394,17 @@
     let selectedAnnouncementMessageId = getFirstAnnouncementMessageId();
     let announcementShowAllMessages = false;
     let isAnnouncementSettingsOpen = false;
-    let manualToggleBtn = null;
+    let isMonthJumpOpen = false;
+    let monthJumpPickerYear = state.monthViewDate.getFullYear();
     let activeManualSectionId = MANUAL_DEFAULT_SECTION;
 
+    captureUpgradeSafetySnapshot();
+    notifyStorageLoadFailures();
+    applyOverdueTaskCarryOver();
     renderDate();
     updateDeadlineField();
     syncSettingsInputs();
+    syncSidebarLayout();
     renderAll();
     renderAnnouncementTrigger();
     refreshDateAtMidnight();
@@ -349,6 +427,8 @@
 
     dailyTabBtn.addEventListener("click", () => switchView("daily"));
     monthlyTabBtn.addEventListener("click", () => switchView("monthly"));
+    dailySidebarBtn.addEventListener("click", () => switchView("daily"));
+    monthlySidebarBtn.addEventListener("click", () => switchView("monthly"));
 
     prevMonthBtn.addEventListener("click", () => {
       state.calendarMonth = shiftMonth(state.calendarMonth, -1);
@@ -361,18 +441,21 @@
     });
 
     prevOverviewMonthBtn.addEventListener("click", () => {
-      state.monthViewDate = shiftMonth(state.monthViewDate, -1);
-      monthlyDeadlineInput.value = "";
-      monthlySpanEndInput.value = "";
-      renderAll();
+      setMonthViewDate(shiftMonth(state.monthViewDate, -1));
     });
 
     nextOverviewMonthBtn.addEventListener("click", () => {
-      state.monthViewDate = shiftMonth(state.monthViewDate, 1);
-      monthlyDeadlineInput.value = "";
-      monthlySpanEndInput.value = "";
-      renderAll();
+      setMonthViewDate(shiftMonth(state.monthViewDate, 1));
     });
+
+    monthViewTitle.addEventListener("click", toggleMonthJumpPopover);
+    monthJumpPrevYearBtn.addEventListener("click", () => shiftMonthJumpYear(-1));
+    monthJumpNextYearBtn.addEventListener("click", () => shiftMonthJumpYear(1));
+    monthJumpCurrentBtn.addEventListener("click", jumpToCurrentMonth);
+    monthJumpCloseBtn.addEventListener("click", closeMonthJumpPopover);
+    monthJumpGrid.addEventListener("click", handleMonthJumpMonthClick);
+    document.addEventListener("click", handleMonthJumpDocumentClick);
+    document.addEventListener("keydown", handleMonthJumpKeydown);
 
     calendarGrid.addEventListener("click", (event) => {
       const button = event.target.closest("button[data-date]");
@@ -435,10 +518,33 @@
     importBtn.addEventListener("click", () => importFileInput.click());
     restoreSnapshotBtn.addEventListener("click", restoreFromSnapshot);
     importFileInput.addEventListener("change", importTasksFromFile);
+    defaultDeadlineTimeInput.addEventListener("change", saveSettingsFromInputs);
     warningHoursInput.addEventListener("change", saveSettingsFromInputs);
     dangerHoursInput.addEventListener("change", saveSettingsFromInputs);
+    autoCarryOverInput.addEventListener("change", saveSettingsFromInputs);
+    showCompletedFutureInput.addEventListener("change", saveSettingsFromInputs);
+    collapsedToolsInput.addEventListener("change", saveSettingsFromInputs);
+    sidebarToggleBtn.addEventListener("click", toggleSidebarCollapsedState);
+    installSidebarBtn.addEventListener("click", openInstallModal);
+    installCloseBtn.addEventListener("click", closeInstallModal);
+    installBackdrop.addEventListener("click", closeInstallModal);
+    installDismissBtn.addEventListener("click", closeInstallModal);
     installAppBtn.addEventListener("click", handleInstallApp);
     installHelpBtn.addEventListener("click", showInstallHelp);
+    settingsSidebarBtn.addEventListener("click", openSettingsModal);
+    settingsCloseBtn.addEventListener("click", closeSettingsModal);
+    settingsBackdrop.addEventListener("click", closeSettingsModal);
+    settingsDismissBtn.addEventListener("click", closeSettingsModal);
+    quoteLibrarySidebarBtn.addEventListener("click", openQuoteLibraryModal);
+    quoteLibraryCloseBtn.addEventListener("click", closeQuoteLibraryModal);
+    quoteLibraryBackdrop.addEventListener("click", closeQuoteLibraryModal);
+    quoteLibraryDismissBtn.addEventListener("click", closeQuoteLibraryModal);
+    quoteLibraryCreateBtn.addEventListener("click", addQuoteFromLibraryComposer);
+    quoteLibraryCreateInput.addEventListener("keydown", handleQuoteLibraryCreateKeydown);
+    quoteLibrarySearchInput.addEventListener("input", handleQuoteLibrarySearchInput);
+    quoteLibrarySortSelect.addEventListener("change", handleQuoteLibrarySortChange);
+    quoteLibraryFilters.addEventListener("click", handleQuoteLibraryFilterClick);
+    quoteLibraryList.addEventListener("click", handleQuoteLibraryListClick);
     versionInfoTrigger.addEventListener("click", openVersionInfoModal);
     versionInfoCloseBtn.addEventListener("click", closeVersionInfoModal);
     versionInfoBackdrop.addEventListener("click", closeVersionInfoModal);
@@ -462,7 +568,6 @@
     editQuoteBtn.addEventListener("click", editQuoteForCurrentView);
     saveQuoteBtn.addEventListener("click", saveCurrentQuoteToLibrary);
     hideQuoteBtn.addEventListener("click", hideCurrentQuoteForCurrentView);
-    manageQuoteBtn.addEventListener("click", manageQuotesForCurrentView);
     monthlyClearCompletedBtn.addEventListener("click", clearCompletedMonthlyTasks);
     monthlyDeleteAllBtn.addEventListener("click", deleteAllMonthlyTasks);
     saveDailyReviewBtn.addEventListener("click", saveDailyReview);
@@ -609,7 +714,9 @@
 
     function renderAnnouncementTrigger() {
       const unread = isAnnouncementUnread();
-      announcementTrigger.textContent = unread ? "新公告" : "公告";
+      if (announcementTriggerLabel) {
+        announcementTriggerLabel.textContent = unread ? "新公告" : "公告";
+      }
       announcementTrigger.classList.toggle("unread", unread);
       announcementTrigger.classList.toggle("read", !unread);
       announcementTrigger.setAttribute(
@@ -652,6 +759,7 @@
       const hasPatch = hasPatchAnnouncement();
       announcementPatchPanel.hidden = activeAnnouncementTab !== "patch";
       announcementPatchEmpty.hidden = activeAnnouncementTab !== "patch" || hasPatch;
+      announcementPatchPanelState.textContent = hasPatch ? getAnnouncementTimeLabel(ANNOUNCEMENT_PATCH.publishedAt) : "当前没有补丁";
 
       if (!hasPatch) {
         announcementPatchTitle.textContent = "";
@@ -667,16 +775,18 @@
 
     function renderAnnouncementMessagesList() {
       const visibleMessages = announcementShowAllMessages ? ANNOUNCEMENT_MESSAGES : ANNOUNCEMENT_MESSAGES.slice(0, 3);
+      announcementMessagesPanelState.textContent = announcementShowAllMessages ? "历史消息" : "最近 3 条";
       announcementMessagesList.innerHTML = visibleMessages.map((message) => {
         const unread = isAnnouncementMessageUnread(message.id);
         const active = selectedAnnouncementMessageId === message.id;
         const statusText = unread ? "未读" : "已读";
+        const timeLabel = getAnnouncementTimeLabel(message.publishedAt);
         return `
           <button class="announcement-message-item ${unread ? "unread" : "read"} ${active ? "active" : ""}" type="button" data-announcement-message="${message.id}">
             <span class="announcement-message-dot" aria-hidden="true"></span>
             <span class="announcement-message-main">
               <span class="announcement-message-title">${escapeHtml(message.title)}</span>
-              <span class="announcement-message-meta">${escapeHtml(message.time)} · ${statusText}</span>
+              <span class="announcement-message-meta">${escapeHtml(timeLabel)} · ${statusText}</span>
             </span>
             <span class="announcement-message-arrow" aria-hidden="true">›</span>
           </button>
@@ -707,7 +817,34 @@
       document.addEventListener("click", handleAnnouncementDocumentClick);
     }
 
+    function syncBodyScrollLock() {
+      const hasOpenOverlay = [
+        versionInfoModal,
+        announcementModal,
+        installModal,
+        settingsModal,
+        quoteLibraryModal
+      ].some((element) => element && !element.hidden);
+
+      document.body.style.overflow = hasOpenOverlay ? "hidden" : "";
+    }
+
     function handleAnnouncementKeydown(event) {
+      if (event.key === "Escape" && quoteLibraryModal && !quoteLibraryModal.hidden) {
+        closeQuoteLibraryModal();
+        return;
+      }
+
+      if (event.key === "Escape" && installModal && !installModal.hidden) {
+        closeInstallModal();
+        return;
+      }
+
+      if (event.key === "Escape" && settingsModal && !settingsModal.hidden) {
+        closeSettingsModal();
+        return;
+      }
+
       if (event.key === "Escape" && !versionInfoModal.hidden) {
         closeVersionInfoModal();
         return;
@@ -730,15 +867,16 @@
     }
 
     function openVersionInfoModal() {
+      closeQuoteLibraryModal();
+      closeInstallModal();
+      closeSettingsModal();
       versionInfoModal.hidden = false;
-      document.body.style.overflow = "hidden";
+      syncBodyScrollLock();
     }
 
     function closeVersionInfoModal() {
       versionInfoModal.hidden = true;
-      if (announcementModal.hidden) {
-        document.body.style.overflow = "";
-      }
+      syncBodyScrollLock();
     }
 
     function handleAnnouncementDocumentClick(event) {
@@ -756,6 +894,9 @@
     }
 
     function openAnnouncementModal() {
+      closeQuoteLibraryModal();
+      closeInstallModal();
+      closeSettingsModal();
       closeVersionInfoModal();
       activeAnnouncementTab = getInitialAnnouncementTab();
       selectedAnnouncementMessageId = getFirstUnreadAnnouncementMessageId();
@@ -763,7 +904,7 @@
       isAnnouncementSettingsOpen = false;
       renderAnnouncementModal();
       announcementModal.hidden = false;
-      document.body.style.overflow = "hidden";
+      syncBodyScrollLock();
 
       if (activeAnnouncementTab === "patch" && hasPatchAnnouncement()) {
         openAnnouncementPatchDetail();
@@ -774,7 +915,64 @@
       announcementModal.hidden = true;
       isAnnouncementSettingsOpen = false;
       closeAnnouncementMessageDetail();
-      document.body.style.overflow = "";
+      syncBodyScrollLock();
+    }
+
+    function openInstallModal() {
+      closeQuoteLibraryModal();
+      closeAnnouncementModal();
+      closeSettingsModal();
+      closeVersionInfoModal();
+      installModal.hidden = false;
+      syncBodyScrollLock();
+    }
+
+    function closeInstallModal() {
+      if (!installModal) {
+        return;
+      }
+
+      installModal.hidden = true;
+      syncBodyScrollLock();
+    }
+
+    function openSettingsModal() {
+      closeQuoteLibraryModal();
+      closeAnnouncementModal();
+      closeInstallModal();
+      closeVersionInfoModal();
+      renderSafetyStatus();
+      settingsModal.hidden = false;
+      syncBodyScrollLock();
+    }
+
+    function closeSettingsModal() {
+      if (!settingsModal) {
+        return;
+      }
+
+      settingsModal.hidden = true;
+      syncBodyScrollLock();
+    }
+
+    function openQuoteLibraryModal() {
+      closeAnnouncementModal();
+      closeInstallModal();
+      closeSettingsModal();
+      closeVersionInfoModal();
+      resetQuoteLibraryUiState();
+      renderQuoteLibraryModal();
+      quoteLibraryModal.hidden = false;
+      syncBodyScrollLock();
+    }
+
+    function closeQuoteLibraryModal() {
+      if (!quoteLibraryModal) {
+        return;
+      }
+
+      quoteLibraryModal.hidden = true;
+      syncBodyScrollLock();
     }
 
     function toggleAnnouncementSettings() {
@@ -844,7 +1042,7 @@
         }
 
         announcementMessageDetailTitle.textContent = ANNOUNCEMENT_PATCH.title;
-        announcementMessageDetailMeta.textContent = `${ANNOUNCEMENT_VERSION} · ${isPatchAnnouncementUnread() ? "未读" : "已读"}`;
+        announcementMessageDetailMeta.textContent = `${getAnnouncementTimeLabel(ANNOUNCEMENT_PATCH.publishedAt)} · ${isPatchAnnouncementUnread() ? "未读" : "已读"}`;
         announcementMessageDetailBody.innerHTML = [
           `<p>${escapeHtml(ANNOUNCEMENT_PATCH.summary)}</p>`,
           `<ul class="announcement-list">${ANNOUNCEMENT_PATCH.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
@@ -866,7 +1064,7 @@
       }
 
       announcementMessageDetailTitle.textContent = selectedMessage.title;
-      announcementMessageDetailMeta.textContent = `${selectedMessage.time} · ${isAnnouncementMessageUnread(selectedMessage.id) ? "未读" : "已读"}`;
+      announcementMessageDetailMeta.textContent = `${getAnnouncementTimeLabel(selectedMessage.publishedAt)} · ${isAnnouncementMessageUnread(selectedMessage.id) ? "未读" : "已读"}`;
       announcementMessageDetailBody.innerHTML = selectedMessage.body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("");
       announcementMessageDetailMarkReadBtn.textContent = isAnnouncementMessageUnread(selectedMessage.id) ? "标记本条已读" : "关闭详情";
     }
@@ -934,47 +1132,15 @@
         return;
       }
 
-      ensureManualToggleButton();
+      if (manualToggleBtn) {
+        manualToggleBtn.addEventListener("click", toggleManual);
+      }
       manualCloseBtn.addEventListener("click", () => setManualOpen(false));
       manualNav.addEventListener("click", handleManualNavClick);
       manualNav.addEventListener("wheel", handleManualNavWheel, { passive: false });
       document.addEventListener("click", handleManualContextClick);
       document.addEventListener("keydown", handleManualKeydown);
       syncManualActiveState(MANUAL_DEFAULT_SECTION);
-    }
-
-    function ensureManualToggleButton() {
-      const brandCopy = announcementTrigger.closest(".brand-copy");
-      if (!brandCopy) {
-        return;
-      }
-
-      let heroLinks = brandCopy.querySelector(".hero-links");
-      if (!heroLinks) {
-        heroLinks = document.createElement("div");
-        heroLinks.className = "hero-links";
-        brandCopy.insertBefore(heroLinks, announcementTrigger);
-        heroLinks.appendChild(announcementTrigger);
-      }
-
-      manualToggleBtn = heroLinks.querySelector("#manualToggleBtn");
-      if (manualToggleBtn) {
-        return;
-      }
-
-      manualToggleBtn = document.createElement("button");
-      manualToggleBtn.id = "manualToggleBtn";
-      manualToggleBtn.className = "manual-toggle-btn";
-      manualToggleBtn.type = "button";
-      manualToggleBtn.textContent = "用户手册";
-      manualToggleBtn.setAttribute("aria-controls", "manualDock");
-      manualToggleBtn.setAttribute("aria-expanded", "false");
-      manualToggleBtn.addEventListener("click", toggleManual);
-      heroLinks.appendChild(manualToggleBtn);
-
-      if (heroLinks.lastElementChild !== announcementTrigger) {
-        heroLinks.appendChild(announcementTrigger);
-      }
     }
 
     function handleManualNavClick(event) {
@@ -1116,6 +1282,210 @@
       });
     }
 
+    function recordStorageLoadFailure(key, error, rawValue) {
+      storageLoadFailures.push({
+        key,
+        message: error instanceof Error ? error.message : String(error || "unknown error"),
+        hasRawValue: typeof rawValue === "string" && rawValue.length > 0
+      });
+    }
+
+    function notifyStorageLoadFailures() {
+      if (!storageLoadFailures.length) {
+        return;
+      }
+
+      const labels = {
+        [STORAGE_KEY]: "任务数据",
+        [SETTINGS_KEY]: "设置数据",
+        [QUOTE_LIBRARY_KEY]: "寄语库数据",
+        [QUOTE_KEY]: "寄语状态",
+        [REVIEW_KEY]: "复盘数据"
+      };
+
+      const uniqueLabels = [...new Set(storageLoadFailures.map((entry) => labels[entry.key] || entry.key))];
+      alert(`检测到以下本地数据读取异常：${uniqueLabels.join("、")}。系统已停止用默认值覆盖原数据。建议先点击“导出备份”，再决定是否清理或修复本地数据。`);
+    }
+
+    function getLatestSnapshotEntry() {
+      return loadSnapshotHistory()[0] || null;
+    }
+
+    function readLastExportAt() {
+      try {
+        const raw = localStorage.getItem(LAST_EXPORT_AT_KEY);
+        if (!raw) {
+          return "";
+        }
+        const parsed = new Date(raw);
+        return Number.isNaN(parsed.getTime()) ? "" : raw;
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function renderSafetyStatus() {
+      if (!safetyStatusBadge) {
+        return;
+      }
+
+      const latestSnapshot = getLatestSnapshotEntry();
+      const lastExportAt = readLastExportAt();
+      const hasFailures = storageLoadFailures.length > 0;
+
+      let badgeText = "正常";
+      let hintText = "当前页面的数据读取与快照保护状态正常。建议在重要改动前导出备份。";
+      safetyStatusBadge.classList.remove("is-warning", "is-danger");
+
+      if (hasFailures) {
+        badgeText = "需要处理";
+        hintText = "检测到本地数据读取异常。系统已停止自动覆盖原数据，建议先导出备份。";
+        safetyStatusBadge.classList.add("is-danger");
+      } else {
+        badgeText = "正常";
+        hintText = lastExportAt
+          ? "当前页面的数据读取与快照保护状态正常。你最近已经手动导出过备份。"
+          : "当前页面的数据读取与快照保护状态正常。建议在重要改动前导出备份。";
+      }
+
+      safetyStatusBadge.textContent = badgeText;
+      safetyVersionValue.textContent = APP_VERSION;
+      safetyUpgradeSnapshotValue.textContent = lastExportAt
+        ? formatSnapshotTime(lastExportAt)
+        : "尚未导出";
+      safetyLatestSnapshotValue.textContent = latestSnapshot
+        ? `${formatSnapshotTime(latestSnapshot.capturedAt)} · ${formatSnapshotReason(latestSnapshot.reason)}`
+        : "暂无";
+      safetyStorageStateValue.textContent = hasFailures
+        ? `${storageLoadFailures.length} 项异常`
+        : "正常";
+      if (safetyStatusHint) {
+        safetyStatusHint.textContent = hintText;
+      }
+    }
+
+    function readVersionMarker() {
+      try {
+        return localStorage.getItem(LAST_SEEN_VERSION_KEY);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function writeVersionMarker() {
+      try {
+        localStorage.setItem(LAST_SEEN_VERSION_KEY, APP_VERSION);
+      } catch (error) {
+        // Ignore storage failures.
+      }
+    }
+
+    function createSnapshotPayloadFromSources(source = {}) {
+      return {
+        app: "daily-note",
+        version: 2,
+        tasks: Array.isArray(source.tasks) ? source.tasks : tasks,
+        settings: source.settings && typeof source.settings === "object" ? source.settings : settings,
+        reviews: source.reviews && typeof source.reviews === "object" ? source.reviews : reviews,
+        quoteState: source.quoteState && typeof source.quoteState === "object" ? source.quoteState : quoteState,
+        quoteLibrary: source.quoteLibrary && typeof source.quoteLibrary === "object" ? source.quoteLibrary : quoteLibrary
+      };
+    }
+
+    function createUpgradeSafetySnapshotPayload() {
+      const payload = {};
+      try {
+        const rawTasks = localStorage.getItem(STORAGE_KEY);
+        if (rawTasks) {
+          payload.tasks = normalizeTasks(JSON.parse(rawTasks), false);
+        }
+      } catch (error) {
+        // Ignore invalid task payloads for upgrade snapshot.
+      }
+
+      try {
+        const rawSettings = localStorage.getItem(SETTINGS_KEY);
+        if (rawSettings) {
+          payload.settings = JSON.parse(rawSettings);
+        }
+      } catch (error) {
+        // Ignore invalid settings payloads for upgrade snapshot.
+      }
+
+      try {
+        const rawReviews = localStorage.getItem(REVIEW_KEY);
+        if (rawReviews) {
+          payload.reviews = normalizeReviews(JSON.parse(rawReviews));
+        }
+      } catch (error) {
+        // Ignore invalid review payloads for upgrade snapshot.
+      }
+
+      try {
+        const rawQuoteLibrary = localStorage.getItem(QUOTE_LIBRARY_KEY);
+        if (rawQuoteLibrary) {
+          payload.quoteLibrary = normalizeQuoteLibrary(JSON.parse(rawQuoteLibrary));
+        }
+      } catch (error) {
+        // Ignore invalid quote library payloads for upgrade snapshot.
+      }
+
+      try {
+        const rawQuoteState = localStorage.getItem(QUOTE_KEY);
+        if (rawQuoteState) {
+          payload.quoteState = normalizeQuoteState(
+            JSON.parse(rawQuoteState),
+            payload.quoteLibrary || quoteLibrary
+          );
+        }
+      } catch (error) {
+        // Ignore invalid quote state payloads for upgrade snapshot.
+      }
+
+      return createSnapshotPayloadFromSources(payload);
+    }
+
+    function saveSnapshot(reason, payloadOverride) {
+      const payload = payloadOverride || createSnapshotPayload();
+      const fingerprint = hashSnapshotPayload(payload);
+      const history = loadSnapshotHistory();
+      if (history[0]?.fingerprint === fingerprint && history[0]?.reason === reason) {
+        return;
+      }
+
+      const nextHistory = [
+        {
+          id: createTaskId(),
+          capturedAt: new Date().toISOString(),
+          reason,
+          fingerprint,
+          payload
+        },
+        ...history
+      ].slice(0, SNAPSHOT_LIMIT);
+
+      persistSnapshotHistory(nextHistory);
+    }
+
+    function captureUpgradeSafetySnapshot() {
+      const lastSeenVersion = readVersionMarker();
+      if (lastSeenVersion === APP_VERSION) {
+        return;
+      }
+
+      const payload = createUpgradeSafetySnapshotPayload();
+      const hasData =
+        Array.isArray(payload.tasks) && payload.tasks.length > 0 ||
+        (payload.reviews && (Object.keys(payload.reviews.daily || {}).length || Object.keys(payload.reviews.monthly || {}).length)) ||
+        (payload.quoteLibrary && ((payload.quoteLibrary.added?.daily?.length || 0) + (payload.quoteLibrary.added?.monthly?.length || 0) > 0));
+
+      if (hasData) {
+        saveSnapshot("pre-upgrade", payload);
+      }
+
+      writeVersionMarker();
+    }
+
     function loadTasks() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -1134,7 +1504,7 @@
         saveTasks(DEFAULT_TASKS);
         return [...DEFAULT_TASKS];
       } catch (error) {
-        saveTasks(DEFAULT_TASKS);
+        recordStorageLoadFailure(STORAGE_KEY, error, localStorage.getItem(STORAGE_KEY));
         return [...DEFAULT_TASKS];
       }
     }
@@ -1244,30 +1614,47 @@
     }
 
     function loadSettings() {
+      const defaults = {
+        defaultDeadlineTime: "21:00",
+        warningHours: 24,
+        dangerHours: 0,
+        autoCarryOver: false,
+        showCompletedFuture: false,
+        sidebarCollapsed: false,
+        collapsedToolsVisible: false
+      };
       try {
         const raw = localStorage.getItem(SETTINGS_KEY);
         if (!raw) {
-          const defaults = { warningHours: 24, dangerHours: 0 };
           localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaults));
           return defaults;
         }
 
         const parsed = JSON.parse(raw);
         return {
+          defaultDeadlineTime: sanitizeDefaultDeadlineTime(parsed.defaultDeadlineTime, defaults.defaultDeadlineTime),
           warningHours: sanitizeHourValue(parsed.warningHours, 24),
-          dangerHours: sanitizeHourValue(parsed.dangerHours, 0)
+          dangerHours: sanitizeHourValue(parsed.dangerHours, 0),
+          autoCarryOver: sanitizeBooleanSetting(parsed.autoCarryOver, false),
+          showCompletedFuture: sanitizeBooleanSetting(parsed.showCompletedFuture, false),
+          sidebarCollapsed: sanitizeBooleanSetting(parsed.sidebarCollapsed, false),
+          collapsedToolsVisible: sanitizeBooleanSetting(parsed.collapsedToolsVisible, false)
         };
       } catch (error) {
-        const defaults = { warningHours: 24, dangerHours: 0 };
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaults));
+        recordStorageLoadFailure(SETTINGS_KEY, error);
         return defaults;
       }
     }
 
     function saveSettings(nextSettings, options = {}) {
       settings = {
+        defaultDeadlineTime: sanitizeDefaultDeadlineTime(nextSettings.defaultDeadlineTime, "21:00"),
         warningHours: sanitizeHourValue(nextSettings.warningHours, 24),
-        dangerHours: sanitizeHourValue(nextSettings.dangerHours, 0)
+        dangerHours: sanitizeHourValue(nextSettings.dangerHours, 0),
+        autoCarryOver: sanitizeBooleanSetting(nextSettings.autoCarryOver, false),
+        showCompletedFuture: sanitizeBooleanSetting(nextSettings.showCompletedFuture, false),
+        sidebarCollapsed: sanitizeBooleanSetting(nextSettings.sidebarCollapsed, false),
+        collapsedToolsVisible: sanitizeBooleanSetting(nextSettings.collapsedToolsVisible, false)
       };
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       if (!options.skipSnapshot) {
@@ -1276,17 +1663,99 @@
     }
 
     function saveSettingsFromInputs() {
+      const previousSettings = { ...settings };
       saveSettings({
+        defaultDeadlineTime: defaultDeadlineTimeInput.value,
         warningHours: warningHoursInput.value,
-        dangerHours: dangerHoursInput.value
+        dangerHours: dangerHoursInput.value,
+        autoCarryOver: autoCarryOverInput.value === "on",
+        showCompletedFuture: showCompletedFutureInput.value === "on",
+        sidebarCollapsed: settings.sidebarCollapsed,
+        collapsedToolsVisible: collapsedToolsInput.value === "on"
       });
       syncSettingsInputs();
+      syncComposerDefaultsAfterSettingsChange(previousSettings);
+      applyOverdueTaskCarryOver();
+      syncSidebarLayout();
       renderAll();
     }
 
     function syncSettingsInputs() {
+      defaultDeadlineTimeInput.value = settings.defaultDeadlineTime;
       warningHoursInput.value = String(settings.warningHours);
       dangerHoursInput.value = String(settings.dangerHours);
+      autoCarryOverInput.value = settings.autoCarryOver ? "on" : "off";
+      showCompletedFutureInput.value = settings.showCompletedFuture ? "on" : "off";
+      collapsedToolsInput.value = settings.collapsedToolsVisible ? "on" : "off";
+    }
+
+    function syncSidebarLayout() {
+      if (!appShell || !appSidebar || !sidebarToggleBtn) {
+        return;
+      }
+
+      const isCollapsed = Boolean(settings.sidebarCollapsed);
+      const showTools = Boolean(settings.collapsedToolsVisible);
+      appShell.classList.toggle("sidebar-collapsed", isCollapsed);
+      appShell.classList.toggle("sidebar-show-collapsed-tools", isCollapsed && showTools);
+      appSidebar.classList.toggle("is-collapsed", isCollapsed);
+      sidebarToggleBtn.textContent = isCollapsed ? "◨" : "◧";
+      sidebarToggleBtn.setAttribute("aria-label", isCollapsed ? "展开侧边栏" : "收起侧边栏");
+      sidebarToggleBtn.setAttribute("aria-pressed", String(isCollapsed));
+    }
+
+    function toggleSidebarCollapsedState() {
+      saveSettings({
+        ...settings,
+        sidebarCollapsed: !settings.sidebarCollapsed
+      }, { skipSnapshot: true });
+      syncSettingsInputs();
+      syncSidebarLayout();
+      renderAll();
+    }
+
+    function applyOverdueTaskCarryOver() {
+      if (!settings.autoCarryOver) {
+        return;
+      }
+
+      const now = new Date();
+      let hasChanges = false;
+      const nextTasks = tasks.map((task) => {
+        if (task.type !== "daily" || task.done) {
+          return task;
+        }
+
+        const deadlineTime = new Date(task.deadline).getTime();
+        if (Number.isNaN(deadlineTime) || deadlineTime >= now.getTime()) {
+          return task;
+        }
+
+        const shiftedTask = { ...task };
+        let nextDeadline = new Date(task.deadline);
+        while (nextDeadline.getTime() < now.getTime()) {
+          nextDeadline = new Date(nextDeadline.getTime() + 24 * 60 * 60 * 1000);
+        }
+
+        const nextDateKey = formatDateKey(nextDeadline);
+        shiftedTask.dateKey = nextDateKey;
+        shiftedTask.spanStartKey = nextDateKey;
+        shiftedTask.spanEndKey = nextDateKey;
+        shiftedTask.deadline = setTimeForDate(
+          nextDateKey,
+          nextDeadline.getHours(),
+          nextDeadline.getMinutes()
+        );
+        hasChanges = true;
+        return shiftedTask;
+      });
+
+      if (!hasChanges) {
+        return;
+      }
+
+      tasks = nextTasks;
+      saveTasks(tasks, { reason: "tasks" });
     }
 
     function createEmptyQuoteLibrary() {
@@ -1312,7 +1781,7 @@
         localStorage.setItem(QUOTE_LIBRARY_KEY, JSON.stringify(normalized));
         return normalized;
       } catch (error) {
-        localStorage.setItem(QUOTE_LIBRARY_KEY, JSON.stringify(defaults));
+        recordStorageLoadFailure(QUOTE_LIBRARY_KEY, error);
         return defaults;
       }
     }
@@ -1407,7 +1876,7 @@
       } catch (error) {
         ensureQuoteForView("daily", defaults, quoteLibrary);
         ensureQuoteForView("monthly", defaults, quoteLibrary);
-        localStorage.setItem(QUOTE_KEY, JSON.stringify(defaults));
+        recordStorageLoadFailure(QUOTE_KEY, error);
         return defaults;
       }
     }
@@ -1448,7 +1917,7 @@
         localStorage.setItem(REVIEW_KEY, JSON.stringify(normalized));
         return normalized;
       } catch (error) {
-        localStorage.setItem(REVIEW_KEY, JSON.stringify(defaults));
+        recordStorageLoadFailure(REVIEW_KEY, error);
         return defaults;
       }
     }
@@ -1623,8 +2092,13 @@
 
       const nextTasks = normalizeTasks(payload.tasks, false);
       const nextSettings = {
+        defaultDeadlineTime: sanitizeDefaultDeadlineTime(payload.settings?.defaultDeadlineTime, "21:00"),
         warningHours: sanitizeHourValue(payload.settings?.warningHours, 24),
-        dangerHours: sanitizeHourValue(payload.settings?.dangerHours, 0)
+        dangerHours: sanitizeHourValue(payload.settings?.dangerHours, 0),
+        autoCarryOver: sanitizeBooleanSetting(payload.settings?.autoCarryOver, false),
+        showCompletedFuture: sanitizeBooleanSetting(payload.settings?.showCompletedFuture, false),
+        sidebarCollapsed: sanitizeBooleanSetting(payload.settings?.sidebarCollapsed, false),
+        collapsedToolsVisible: sanitizeBooleanSetting(payload.settings?.collapsedToolsVisible, false)
       };
       const nextReviews = normalizeReviews(payload.reviews);
       const nextQuoteLibrary = normalizeQuoteLibrary(payload.quoteLibrary);
@@ -1641,6 +2115,7 @@
       saveReviews(reviews, { skipSnapshot: true });
       persistQuotePreferences({ skipSnapshot: true });
       syncSettingsInputs();
+      syncSidebarLayout();
       renderAll();
       saveSnapshot("restore");
     }
@@ -1686,6 +2161,58 @@
       }).format(date);
     }
 
+    function startOfDay(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function formatExactAnnouncementDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "未知日期";
+      }
+      return new Intl.DateTimeFormat("zh-CN", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric"
+      }).format(date);
+    }
+
+    function getAnnouncementTimeLabel(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "未知时间";
+      }
+
+      const today = startOfDay(new Date());
+      const publishedDay = startOfDay(date);
+      const diffMs = today.getTime() - publishedDay.getTime();
+      if (diffMs < 0) {
+        return formatExactAnnouncementDate(value);
+      }
+
+      const diffDays = Math.floor(diffMs / 86400000);
+      const fullMonthDiff = (today.getFullYear() - publishedDay.getFullYear()) * 12
+        + (today.getMonth() - publishedDay.getMonth())
+        - (today.getDate() < publishedDay.getDate() ? 1 : 0);
+
+      if (diffDays === 0) {
+        return "今天";
+      }
+      if (diffDays === 1) {
+        return "昨天";
+      }
+      if (diffDays < 7) {
+        return `${diffDays}天前`;
+      }
+      if (fullMonthDiff <= 0) {
+        return `${Math.floor(diffDays / 7)}周前`;
+      }
+      if (fullMonthDiff === 1) {
+        return "1个月前";
+      }
+      return formatExactAnnouncementDate(value);
+    }
+
     function formatSnapshotReason(reason) {
       if (reason === "settings") {
         return "提醒设置";
@@ -1704,6 +2231,9 @@
       }
       if (reason === "pre-restore") {
         return "恢复前备份";
+      }
+      if (reason === "pre-upgrade") {
+        return "版本升级前备份";
       }
       return "任务改动";
     }
@@ -1785,6 +2315,436 @@
       hideQuoteBtn.disabled = !currentText || isTemporary;
       hideQuoteBtn.style.opacity = hideQuoteBtn.disabled ? "0.55" : "1";
       hideQuoteBtn.style.cursor = hideQuoteBtn.disabled ? "default" : "pointer";
+
+      if (quoteLibraryModal && !quoteLibraryModal.hidden) {
+        renderQuoteLibraryModal();
+      }
+    }
+
+    function resetQuoteLibraryUiState() {
+      quoteLibraryUiState.filter = "all";
+      quoteLibraryUiState.search = "";
+      quoteLibraryUiState.sort = "status";
+      activeQuoteLibraryEntries = [];
+    }
+
+    function handleQuoteLibrarySearchInput() {
+      quoteLibraryUiState.search = normalizeQuoteText(quoteLibrarySearchInput.value);
+      renderQuoteLibraryModal();
+    }
+
+    function handleQuoteLibraryCreateKeydown(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addQuoteFromLibraryComposer();
+      }
+    }
+
+    function addQuoteFromLibraryComposer() {
+      const view = state.currentView === "monthly" ? "monthly" : "daily";
+      const text = normalizeQuoteText(quoteLibraryCreateInput.value);
+      if (!text) {
+        alert("寄语内容不能为空。");
+        return;
+      }
+
+      const result = addQuoteToLibrary(view, text);
+      quoteState.current[view] = text;
+      quoteState.currentMeta[view] = {
+        id: result.entry.id,
+        source: result.entry.source
+      };
+      quoteState.recent[view] = updateRecentQuoteIds(quoteState.recent[view], result.entry.id);
+      quoteLibraryCreateInput.value = "";
+      persistQuotePreferences();
+      renderQuoteCard();
+    }
+
+    function handleQuoteLibrarySortChange() {
+      quoteLibraryUiState.sort = quoteLibrarySortSelect.value === "latest" || quoteLibrarySortSelect.value === "length"
+        ? quoteLibrarySortSelect.value
+        : "status";
+      renderQuoteLibraryModal();
+    }
+
+    function handleQuoteLibraryFilterClick(event) {
+      const button = event.target.closest("[data-quote-filter]");
+      if (!button) {
+        return;
+      }
+
+      const nextFilter = button.dataset.quoteFilter;
+      quoteLibraryUiState.filter = ["all", "current", "available", "hidden", "added"].includes(nextFilter)
+        ? nextFilter
+        : "all";
+      renderQuoteLibraryModal();
+    }
+
+    function handleQuoteLibraryListClick(event) {
+      const button = event.target.closest("[data-quote-action]");
+      if (!button) {
+        return;
+      }
+
+      const entry = activeQuoteLibraryEntries.find((item) => item.id === button.dataset.quoteId);
+      if (!entry) {
+        return;
+      }
+
+      if (button.dataset.quoteAction === "set-current") {
+        applyQuoteLibraryCurrentEntry(entry);
+        return;
+      }
+
+      if (button.dataset.quoteAction === "save") {
+        saveQuoteLibraryEntry(entry);
+        return;
+      }
+
+      if (button.dataset.quoteAction === "hide") {
+        hideQuoteLibraryEntry(entry);
+        return;
+      }
+
+      if (button.dataset.quoteAction === "restore") {
+        restoreQuoteLibraryEntry(entry);
+        return;
+      }
+
+      if (button.dataset.quoteAction === "delete") {
+        removeQuoteLibraryEntry(entry);
+      }
+    }
+
+    function getQuoteLibraryEntries(view, targetLibrary = quoteLibrary, targetState = quoteState) {
+      const currentText = normalizeQuoteText(targetState.current[view]);
+      const currentMeta = resolveQuoteMeta(view, currentText, targetState.currentMeta[view], targetLibrary);
+      const currentTextKey = currentText ? currentText.toLocaleLowerCase("zh-CN") : "";
+      const hiddenMatchers = getHiddenQuoteMatchers(view, targetLibrary);
+      const addedById = new Map(targetLibrary.added[view].map((entry) => [entry.id, entry]));
+      const hiddenById = new Map(targetLibrary.hidden[view].map((entry) => [entry.id, entry]));
+      const addedByText = new Map(targetLibrary.added[view].map((entry) => [normalizeQuoteText(entry.text).toLocaleLowerCase("zh-CN"), entry]));
+      const hiddenByText = new Map(targetLibrary.hidden[view].map((entry) => [normalizeQuoteText(entry.text).toLocaleLowerCase("zh-CN"), entry]));
+      const entries = [];
+      const seenTexts = new Set();
+
+      function pushEntry(entry, source) {
+        const normalizedText = normalizeQuoteText(entry?.text);
+        if (!normalizedText) {
+          return;
+        }
+
+        const textKey = normalizedText.toLocaleLowerCase("zh-CN");
+        if (seenTexts.has(textKey)) {
+          return;
+        }
+
+        const addedEntry = addedById.get(entry.id) || addedByText.get(textKey) || null;
+        const hiddenEntry = hiddenById.get(entry.id) || hiddenByText.get(textKey) || null;
+        const finalSource = source || entry.source || (addedEntry ? "added" : "default");
+        const isCurrent = Boolean(currentTextKey) && (
+          textKey === currentTextKey ||
+          (currentMeta?.source !== "temporary" && currentMeta?.id && currentMeta.id === entry.id)
+        );
+        const isHidden = hiddenMatchers.ids.has(entry.id) || hiddenMatchers.texts.has(textKey);
+
+        seenTexts.add(textKey);
+        entries.push({
+          id: entry.id,
+          text: normalizedText,
+          source: finalSource,
+          isCurrent,
+          isHidden,
+          isAdded: finalSource === "added",
+          isTemporary: finalSource === "temporary",
+          createdAt: addedEntry?.createdAt || "",
+          hiddenAt: hiddenEntry?.hiddenAt || "",
+          order: entries.length
+        });
+      }
+
+      if (currentText && currentMeta?.source === "temporary") {
+        pushEntry({
+          id: currentMeta.id,
+          text: currentText,
+          source: "temporary"
+        }, "temporary");
+      }
+
+      getDefaultQuoteEntries(view).forEach((entry) => pushEntry(entry, "default"));
+      targetLibrary.added[view].forEach((entry) => pushEntry(entry, "added"));
+      targetLibrary.hidden[view].forEach((entry) => pushEntry(entry, entry.source === "added" ? "added" : "default"));
+      return entries;
+    }
+
+    function getQuoteLibraryEntryStatusWeight(entry) {
+      if (entry.isCurrent) {
+        return 0;
+      }
+      if (!entry.isHidden) {
+        return 1;
+      }
+      return 2;
+    }
+
+    function filterAndSortQuoteLibraryEntries(entries) {
+      const searchText = quoteLibraryUiState.search.toLocaleLowerCase("zh-CN");
+      const filteredEntries = entries.filter((entry) => {
+        if (quoteLibraryUiState.filter === "current" && !entry.isCurrent) {
+          return false;
+        }
+        if (quoteLibraryUiState.filter === "available" && entry.isHidden) {
+          return false;
+        }
+        if (quoteLibraryUiState.filter === "hidden" && !entry.isHidden) {
+          return false;
+        }
+        if (quoteLibraryUiState.filter === "added" && !entry.isAdded) {
+          return false;
+        }
+        if (searchText && !entry.text.toLocaleLowerCase("zh-CN").includes(searchText)) {
+          return false;
+        }
+        return true;
+      });
+
+      return filteredEntries.sort((left, right) => {
+        if (quoteLibraryUiState.sort === "latest") {
+          const leftTime = left.createdAt ? new Date(left.createdAt).getTime() : -1;
+          const rightTime = right.createdAt ? new Date(right.createdAt).getTime() : -1;
+          if (leftTime !== rightTime) {
+            return rightTime - leftTime;
+          }
+        } else if (quoteLibraryUiState.sort === "length") {
+          if (left.text.length !== right.text.length) {
+            return right.text.length - left.text.length;
+          }
+        } else {
+          const weightDiff = getQuoteLibraryEntryStatusWeight(left) - getQuoteLibraryEntryStatusWeight(right);
+          if (weightDiff !== 0) {
+            return weightDiff;
+          }
+        }
+
+        if (left.isAdded !== right.isAdded) {
+          return left.isAdded ? -1 : 1;
+        }
+        if (left.createdAt && right.createdAt && left.createdAt !== right.createdAt) {
+          return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime();
+        }
+        return left.order - right.order;
+      });
+    }
+
+    function getQuoteLibraryEntryTags(entry) {
+      const tags = [];
+      if (entry.isCurrent) {
+        tags.push({ label: "当前显示", className: "current" });
+      }
+      if (entry.isHidden) {
+        tags.push({ label: "已隐藏", className: "hidden" });
+      }
+      if (entry.isTemporary) {
+        tags.push({ label: "临时改写", className: "temporary" });
+      } else if (entry.isAdded) {
+        tags.push({ label: "我新增的", className: "added" });
+      } else {
+        tags.push({ label: "系统默认", className: "" });
+      }
+      return tags;
+    }
+
+    function getQuoteLibraryEntryMeta(entry) {
+      if (entry.isTemporary) {
+        return "这句寄语只保留在当前页面，加入寄语库后才会参与后续展示。";
+      }
+      if (entry.isHidden) {
+        return entry.hiddenAt
+          ? `已隐藏 · ${formatSnapshotTime(entry.hiddenAt)}`
+          : "已隐藏，当前不会参与随机展示。";
+      }
+      if (entry.isAdded) {
+        return entry.createdAt
+          ? `你新增于 ${formatSnapshotTime(entry.createdAt)}`
+          : "你新增的长期寄语。";
+      }
+      return "系统默认寄语，当前处于可展示状态。";
+    }
+
+    function getQuoteLibraryEntryActions(entry) {
+      const actions = [];
+      if (entry.isTemporary) {
+        actions.push({ key: "save", label: "加入寄语库", className: "primary" });
+        return actions;
+      }
+
+      if (entry.isHidden) {
+        actions.push({ key: "restore", label: "恢复", className: "primary" });
+        if (entry.isAdded) {
+          actions.push({ key: "delete", label: "删除", className: "danger" });
+        }
+        return actions;
+      }
+
+      if (!entry.isCurrent) {
+        actions.push({ key: "set-current", label: "设为当前", className: "primary" });
+      }
+      actions.push({ key: "hide", label: "隐藏", className: "warn" });
+      if (entry.isAdded) {
+        actions.push({ key: "delete", label: "删除", className: "danger" });
+      }
+      return actions;
+    }
+
+    function renderQuoteLibraryModal() {
+      const view = state.currentView === "monthly" ? "monthly" : "daily";
+      const viewLabel = view === "daily" ? "日度" : "月度";
+      const entries = getQuoteLibraryEntries(view);
+      const renderedEntries = filterAndSortQuoteLibraryEntries(entries);
+      const visibleCount = entries.filter((entry) => !entry.isHidden).length;
+      const hiddenCount = entries.filter((entry) => entry.isHidden).length;
+      const currentCount = entries.filter((entry) => entry.isCurrent).length;
+
+      activeQuoteLibraryEntries = entries;
+      quoteLibraryTitle.textContent = `${viewLabel}寄语库`;
+      quoteLibrarySubtitle.textContent = "可直接搜索、筛选并整理寄语；当前显示的寄语会标成绿色，已隐藏的寄语会加删除线。";
+      quoteLibrarySearchInput.value = quoteLibraryUiState.search;
+      quoteLibrarySortSelect.value = quoteLibraryUiState.sort;
+      Array.from(quoteLibraryFilters.querySelectorAll("[data-quote-filter]")).forEach((button) => {
+        const isActive = button.dataset.quoteFilter === quoteLibraryUiState.filter;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+      quoteLibrarySummary.textContent = `共 ${entries.length} 条，当前筛出 ${renderedEntries.length} 条；当前显示 ${currentCount} 条，可用 ${visibleCount} 条，已隐藏 ${hiddenCount} 条。`;
+      quoteLibraryEmpty.hidden = renderedEntries.length > 0;
+      quoteLibraryEmpty.textContent = quoteLibraryUiState.search
+        ? "没有匹配到包含该关键词的寄语。"
+        : "当前筛选条件下没有可展示的寄语。";
+      quoteLibraryList.innerHTML = renderedEntries
+        .map((entry, index) => {
+          const classes = ["quote-library-item"];
+          if (entry.isCurrent) {
+            classes.push("is-current");
+          }
+          if (entry.isHidden) {
+            classes.push("is-hidden");
+          }
+
+          const tags = getQuoteLibraryEntryTags(entry)
+            .map((tag) => `<span class="quote-library-item-tag ${tag.className}">${escapeHtml(tag.label)}</span>`)
+            .join("");
+          const actions = getQuoteLibraryEntryActions(entry)
+            .map((action) => `<button class="quote-library-action-btn ${action.className}" type="button" data-quote-action="${action.key}" data-quote-id="${escapeHtml(entry.id)}">${escapeHtml(action.label)}</button>`)
+            .join("");
+
+          return `
+            <article class="${classes.join(" ")}">
+              <span class="quote-library-item-index">${index + 1}</span>
+              <div class="quote-library-item-main">
+                <div class="quote-library-item-tags">${tags}</div>
+                <p class="quote-library-item-text">${escapeHtml(entry.text)}</p>
+                <div class="quote-library-item-meta">${escapeHtml(getQuoteLibraryEntryMeta(entry))}</div>
+              </div>
+              <div class="quote-library-item-actions">${actions}</div>
+            </article>
+          `;
+        })
+        .join("");
+    }
+
+    function applyQuoteLibraryCurrentEntry(entry) {
+      const view = state.currentView === "monthly" ? "monthly" : "daily";
+      if (!entry || entry.isHidden) {
+        return;
+      }
+
+      quoteState.current[view] = entry.text;
+      quoteState.currentMeta[view] = {
+        id: entry.id,
+        source: entry.source
+      };
+      quoteState.recent[view] = updateRecentQuoteIds(quoteState.recent[view], entry.id);
+      persistQuotePreferences();
+      renderQuoteCard();
+    }
+
+    function saveQuoteLibraryEntry(entry) {
+      const view = state.currentView === "monthly" ? "monthly" : "daily";
+      if (!entry || !entry.isTemporary) {
+        return;
+      }
+
+      const result = addQuoteToLibrary(view, entry.text);
+      quoteState.current[view] = entry.text;
+      quoteState.currentMeta[view] = {
+        id: result.entry.id,
+        source: result.entry.source
+      };
+      quoteState.recent[view] = updateRecentQuoteIds(quoteState.recent[view], result.entry.id);
+      persistQuotePreferences();
+      renderQuoteCard();
+    }
+
+    function hideQuoteLibraryEntry(entry) {
+      const view = state.currentView === "monthly" ? "monthly" : "daily";
+      if (!entry || entry.isHidden || entry.isTemporary) {
+        return;
+      }
+
+      const availableAfterHide = getQuotePool(view, quoteLibrary).filter((item) =>
+        item.id !== entry.id && normalizeQuoteText(item.text) !== normalizeQuoteText(entry.text)
+      );
+      if (entry.isCurrent && !availableAfterHide.length) {
+        alert("至少要保留一条可用寄语。你可以先新增一条长期寄语，再隐藏当前这句。");
+        return;
+      }
+
+      hideQuote(view, { id: entry.id, source: entry.source }, entry.text);
+      if (entry.isCurrent) {
+        const nextEntry = pickNextQuoteEntry(view, quoteState.recent[view], quoteLibrary) || availableAfterHide[0];
+        if (nextEntry) {
+          quoteState.current[view] = nextEntry.text;
+          quoteState.currentMeta[view] = {
+            id: nextEntry.id,
+            source: nextEntry.source
+          };
+          quoteState.recent[view] = updateRecentQuoteIds(quoteState.recent[view], nextEntry.id);
+        }
+      }
+      persistQuotePreferences();
+      renderQuoteCard();
+    }
+
+    function restoreQuoteLibraryEntry(entry) {
+      const view = state.currentView === "monthly" ? "monthly" : "daily";
+      if (!entry || !entry.isHidden) {
+        return;
+      }
+
+      restoreHiddenQuote(view, entry.id, entry.text);
+      persistQuotePreferences();
+      renderQuoteCard();
+    }
+
+    function removeQuoteLibraryEntry(entry) {
+      const view = state.currentView === "monthly" ? "monthly" : "daily";
+      if (!entry || !entry.isAdded) {
+        return;
+      }
+
+      const confirmed = confirm("确定删除这条你新增的寄语吗？删除后不会再参与展示。");
+      if (!confirmed) {
+        return;
+      }
+
+      removeAddedQuote(view, entry.id);
+      if (quoteState.currentMeta[view]?.id === entry.id) {
+        quoteState.current[view] = "";
+        quoteState.currentMeta[view] = null;
+        ensureQuoteForView(view);
+      }
+      persistQuotePreferences();
+      renderQuoteCard();
     }
 
     function refreshQuoteForCurrentView() {
@@ -1885,119 +2845,6 @@
       quoteState.recent[view] = updateRecentQuoteIds(quoteState.recent[view], nextEntry.id);
       persistQuotePreferences();
       renderQuoteCard();
-    }
-
-    function manageQuotesForCurrentView() {
-      const view = state.currentView;
-      const viewLabel = view === "daily" ? "日度" : "月度";
-      const addedItems = quoteLibrary.added[view];
-      const hiddenItems = quoteLibrary.hidden[view];
-      const selection = prompt(
-        `${viewLabel}寄语管理：\n1. 查看我新增的寄语（${addedItems.length}）\n2. 新增一条长期寄语\n3. 删除我新增的一条寄语\n4. 查看已隐藏寄语（${hiddenItems.length}）\n5. 恢复一条已隐藏寄语`,
-        "1"
-      );
-
-      if (selection === null) {
-        return;
-      }
-
-      if (selection === "1") {
-        if (!addedItems.length) {
-          alert("当前还没有你新增的长期寄语。");
-          return;
-        }
-        alert(addedItems.map((item, index) => `${index + 1}. ${item.text}`).join("\n"));
-        return;
-      }
-
-      if (selection === "2") {
-        const text = prompt(`新增一条${viewLabel}长期寄语：`, "");
-        if (text === null) {
-          return;
-        }
-        const trimmed = normalizeQuoteText(text);
-        if (!trimmed) {
-          alert("寄语内容不能为空。");
-          return;
-        }
-        const result = addQuoteToLibrary(view, trimmed);
-        quoteState.current[view] = trimmed;
-        quoteState.currentMeta[view] = {
-          id: result.entry.id,
-          source: result.entry.source
-        };
-        persistQuotePreferences();
-        renderQuoteCard();
-        alert(result.status === "added" ? "已经加入长期寄语库。" : "这句寄语已经在可用寄语池里了。");
-        return;
-      }
-
-      if (selection === "3") {
-        if (!addedItems.length) {
-          alert("当前没有可删除的长期寄语。");
-          return;
-        }
-        const pick = prompt(
-          `输入要删除的长期寄语编号：\n${addedItems.map((item, index) => `${index + 1}. ${item.text}`).join("\n")}`,
-          "1"
-        );
-        if (pick === null) {
-          return;
-        }
-        const pickedIndex = Number(pick) - 1;
-        if (!Number.isInteger(pickedIndex) || pickedIndex < 0 || pickedIndex >= addedItems.length) {
-          alert("输入的编号无效。");
-          return;
-        }
-        const entry = addedItems[pickedIndex];
-        removeAddedQuote(view, entry.id);
-        const currentMeta = quoteState.currentMeta[view];
-        if (currentMeta?.id === entry.id) {
-          quoteState.current[view] = "";
-          quoteState.currentMeta[view] = null;
-          ensureQuoteForView(view);
-        }
-        persistQuotePreferences();
-        renderQuoteCard();
-        alert("已删除这条长期寄语。");
-        return;
-      }
-
-      if (selection === "4") {
-        if (!hiddenItems.length) {
-          alert("当前没有已隐藏的寄语。");
-          return;
-        }
-        alert(hiddenItems.map((item, index) => `${index + 1}. ${item.text}`).join("\n"));
-        return;
-      }
-
-      if (selection === "5") {
-        if (!hiddenItems.length) {
-          alert("当前没有可恢复的隐藏寄语。");
-          return;
-        }
-        const pick = prompt(
-          `输入要恢复的隐藏寄语编号：\n${hiddenItems.map((item, index) => `${index + 1}. ${item.text}`).join("\n")}`,
-          "1"
-        );
-        if (pick === null) {
-          return;
-        }
-        const pickedIndex = Number(pick) - 1;
-        if (!Number.isInteger(pickedIndex) || pickedIndex < 0 || pickedIndex >= hiddenItems.length) {
-          alert("输入的编号无效。");
-          return;
-        }
-        const entry = hiddenItems[pickedIndex];
-        restoreHiddenQuote(view, entry.id, entry.text);
-        persistQuotePreferences();
-        renderQuoteCard();
-        alert("这句寄语已经恢复参与随机展示。");
-        return;
-      }
-
-      alert("没有对应的操作编号。");
     }
 
     function getDefaultQuoteEntries(view) {
@@ -2397,10 +3244,11 @@
     }
 
     function exportTasks() {
+      const exportedAt = new Date().toISOString();
       const payload = {
         app: "日行小记",
         version: 4,
-        exportedAt: new Date().toISOString(),
+        exportedAt,
         settings,
         tasks,
         reviews,
@@ -2421,6 +3269,12 @@
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(objectUrl);
+      try {
+        localStorage.setItem(LAST_EXPORT_AT_KEY, exportedAt);
+      } catch (error) {
+        // Ignore storage failures.
+      }
+      renderSafetyStatus();
     }
 
     function importTasksFromFile(event) {
@@ -2481,6 +3335,7 @@
     }
 
     function renderAll() {
+      renderSafetyStatus();
       renderCalendar();
       renderTaskList();
       renderStats();
@@ -2736,9 +3591,104 @@
     function renderMonthlyView() {
       const monthKey = formatMonthKey(state.monthViewDate);
       monthViewTitle.textContent = `${formatMonthLabel(monthKey)} 月度任务`;
+      monthJumpPickerYear = state.monthViewDate.getFullYear();
+      renderMonthJumpPopover();
       monthlyComposerHint.textContent = `当前会添加到 ${formatMonthLabel(monthKey)} 的月度清单`;
       syncMonthlyDeadline(false);
       syncMonthlySpanEndInput(false);
+    }
+
+    function setMonthViewDate(date) {
+      state.monthViewDate = startOfMonth(date);
+      monthlyDeadlineInput.value = "";
+      monthlySpanEndInput.value = "";
+      renderAll();
+    }
+
+    function renderMonthJumpPopover() {
+      const activeYear = state.monthViewDate.getFullYear();
+      const activeMonth = state.monthViewDate.getMonth();
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+
+      monthViewTitle.classList.toggle("is-open", isMonthJumpOpen);
+      monthViewTitle.setAttribute("aria-expanded", String(isMonthJumpOpen));
+      monthJumpPopover.hidden = !isMonthJumpOpen;
+      monthJumpYearLabel.textContent = `${monthJumpPickerYear}年`;
+      monthJumpGrid.innerHTML = Array.from({ length: 12 }, (_, index) => {
+        const isActive = monthJumpPickerYear === activeYear && index === activeMonth;
+        const isCurrent = monthJumpPickerYear === currentYear && index === currentMonth;
+        const classes = [
+          "month-jump-month-btn",
+          isActive ? "is-active" : "",
+          isCurrent ? "is-current" : ""
+        ].filter(Boolean).join(" ");
+        return `<button class="${classes}" type="button" data-month="${index}">${index + 1}月</button>`;
+      }).join("");
+    }
+
+    function toggleMonthJumpPopover() {
+      if (isMonthJumpOpen) {
+        closeMonthJumpPopover();
+        return;
+      }
+      openMonthJumpPopover();
+    }
+
+    function openMonthJumpPopover() {
+      monthJumpPickerYear = state.monthViewDate.getFullYear();
+      isMonthJumpOpen = true;
+      renderMonthJumpPopover();
+    }
+
+    function closeMonthJumpPopover() {
+      if (!isMonthJumpOpen) {
+        return;
+      }
+      isMonthJumpOpen = false;
+      renderMonthJumpPopover();
+    }
+
+    function shiftMonthJumpYear(offset) {
+      monthJumpPickerYear += offset;
+      renderMonthJumpPopover();
+    }
+
+    function handleMonthJumpMonthClick(event) {
+      const button = event.target.closest("button[data-month]");
+      if (!button) {
+        return;
+      }
+      const monthIndex = Number(button.dataset.month);
+      if (Number.isNaN(monthIndex)) {
+        return;
+      }
+      setMonthViewDate(new Date(monthJumpPickerYear, monthIndex, 1));
+      closeMonthJumpPopover();
+    }
+
+    function jumpToCurrentMonth() {
+      setMonthViewDate(startOfMonth(new Date()));
+      closeMonthJumpPopover();
+    }
+
+    function handleMonthJumpDocumentClick(event) {
+      if (!isMonthJumpOpen) {
+        return;
+      }
+      if (event.target.closest(".month-jump-wrap")) {
+        return;
+      }
+      closeMonthJumpPopover();
+    }
+
+    function handleMonthJumpKeydown(event) {
+      if (event.key !== "Escape" || !isMonthJumpOpen) {
+        return;
+      }
+      closeMonthJumpPopover();
+      monthViewTitle.focus();
     }
 
     function renderMonthlyTaskList() {
@@ -2781,6 +3731,9 @@
       } else {
         focusSummary.textContent = `${formatMonthLabel(formatMonthKey(state.monthViewDate))} · ${getVisibleTasks().length} 项任务`;
       }
+      if (focusSummaryDisplay) {
+        focusSummaryDisplay.textContent = focusSummary.textContent;
+      }
     }
 
     function switchView(view) {
@@ -2792,6 +3745,16 @@
       const isDaily = state.currentView === "daily";
       dailyTabBtn.classList.toggle("active", isDaily);
       monthlyTabBtn.classList.toggle("active", !isDaily);
+      if (dailyStatsBar) {
+        dailyStatsBar.hidden = !isDaily;
+      }
+      if (monthlyStatsBar) {
+        monthlyStatsBar.hidden = isDaily;
+      }
+      dailySidebarBtn.classList.toggle("active", isDaily);
+      monthlySidebarBtn.classList.toggle("active", !isDaily);
+      dailySidebarBtn.setAttribute("aria-pressed", String(isDaily));
+      monthlySidebarBtn.setAttribute("aria-pressed", String(!isDaily));
       dailyView.classList.toggle("active", isDaily);
       monthlyView.classList.toggle("active", !isDaily);
       updateDeadlineField();
@@ -2800,9 +3763,7 @@
     function updateDeadlineField() {
       const type = state.currentView === "monthly" ? "monthly" : "daily";
       deadlineLabel.textContent = type === "monthly" ? "月度截止时间" : "事项结束时间";
-      composerHint.textContent = type === "monthly"
-        ? `当前会添加到 ${formatMonthLabel(formatMonthKey(state.monthViewDate))} 的月度清单`
-        : `当前会添加到 ${formatDateLabel(state.selectedDateKey)} 的日度清单`;
+      composerHint.textContent = "";
       syncDefaultDeadline(true);
     }
 
@@ -2817,10 +3778,11 @@
     }
 
     function defaultDeadlineFor(type, dateKey) {
+      const [hours, minutes] = parseTimeSetting(settings.defaultDeadlineTime);
       if (type === "monthly") {
-        return `${dateKey}-28T21:00`;
+        return `${dateKey}-28T${settings.defaultDeadlineTime}`;
       }
-      return setTimeForDate(dateKey, 21, 0);
+      return setTimeForDate(dateKey, hours, minutes);
     }
 
     function syncMonthlyDeadline(force = false) {
@@ -2968,7 +3930,7 @@
     function summarizeTaskSignals(taskGroup) {
       return taskGroup.reduce((acc, task) => {
         const status = getTaskStatus(task);
-        if (!task.done) {
+        if (!task.done && status === "normal") {
           acc.pending += 1;
         }
         if (status === "upcoming") {
@@ -2990,6 +3952,9 @@
         weekday: "long"
       });
       currentDate.textContent = formatter.format(now);
+      if (currentDateDisplay) {
+        currentDateDisplay.textContent = currentDate.textContent;
+      }
     }
 
     function refreshDateAtMidnight() {
@@ -3036,7 +4001,10 @@
       });
 
       if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
-        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+        navigator.serviceWorker.getRegistrations()
+          .then((registrations) => Promise.all(registrations.map((registration) => registration.update())))
+          .catch(() => {});
+        navigator.serviceWorker.register(`./service-worker.js?v=${encodeURIComponent(APP_VERSION)}&build=${encodeURIComponent(DEPLOY_BUILD)}`).catch(() => {});
       }
     }
 
@@ -3061,6 +4029,7 @@
     }
 
     function showInstallHelp() {
+      closeInstallModal();
       openManual("manual-install", { forceHighlight: true });
     }
 
@@ -3104,6 +4073,61 @@
       return `${dateKey}T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
     }
 
+    function parseTimeSetting(value) {
+      const safeValue = sanitizeDefaultDeadlineTime(value, "21:00");
+      const [hours, minutes] = safeValue.split(":").map(Number);
+      return [hours, minutes];
+    }
+
+    function sanitizeDefaultDeadlineTime(value, fallback) {
+      if (typeof value !== "string") {
+        return fallback;
+      }
+
+      const trimmed = value.trim();
+      if (!/^\d{2}:\d{2}$/.test(trimmed)) {
+        return fallback;
+      }
+
+      const [hours, minutes] = trimmed.split(":").map(Number);
+      if (
+        Number.isNaN(hours) ||
+        Number.isNaN(minutes) ||
+        hours < 0 ||
+        hours > 23 ||
+        minutes < 0 ||
+        minutes > 59
+      ) {
+        return fallback;
+      }
+
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    }
+
+    function syncComposerDefaultsAfterSettingsChange(previousSettings) {
+      const currentDailyKey = state.selectedDateKey;
+      const currentMonthKey = formatMonthKey(state.monthViewDate);
+      const previousDailyDefault = buildDeadlineForSetting("daily", currentDailyKey, previousSettings.defaultDeadlineTime);
+      const previousMonthlyDefault = buildDeadlineForSetting("monthly", currentMonthKey, previousSettings.defaultDeadlineTime);
+
+      if (!deadlineInput.value || deadlineInput.value === previousDailyDefault) {
+        deadlineInput.value = defaultDeadlineFor("daily", currentDailyKey);
+      }
+
+      if (!monthlyDeadlineInput.value || monthlyDeadlineInput.value === previousMonthlyDefault) {
+        monthlyDeadlineInput.value = defaultDeadlineFor("monthly", currentMonthKey);
+      }
+    }
+
+    function buildDeadlineForSetting(type, dateKey, timeValue) {
+      const safeTime = sanitizeDefaultDeadlineTime(timeValue, "21:00");
+      if (type === "monthly") {
+        return `${dateKey}-28T${safeTime}`;
+      }
+      const [hours, minutes] = parseTimeSetting(safeTime);
+      return setTimeForDate(dateKey, hours, minutes);
+    }
+
     function formatDateLabel(dateKey) {
       return new Intl.DateTimeFormat("zh-CN", {
         month: "long",
@@ -3128,7 +4152,13 @@
 
     function taskCoversDate(task, dateKey) {
       const startKey = task.spanStartKey || task.dateKey;
-      const endKey = task.spanEndKey || startKey;
+      let endKey = task.spanEndKey || startKey;
+      if (task.done && !settings.showCompletedFuture) {
+        const completedDateKey = extractDateKeyFromDateTime(task.completedAt);
+        if (completedDateKey && compareDateKeys(completedDateKey, endKey) < 0) {
+          endKey = completedDateKey;
+        }
+      }
       return compareDateKeys(startKey, dateKey) <= 0 && compareDateKeys(dateKey, endKey) <= 0;
     }
 
@@ -3212,5 +4242,12 @@
         return fallback;
       }
       return Math.floor(numeric);
+    }
+
+    function sanitizeBooleanSetting(value, fallback) {
+      if (typeof value === "boolean") {
+        return value;
+      }
+      return fallback;
     }
   
