@@ -1,5 +1,5 @@
 const APP_VERSION = "0.2.1";
-const DEPLOY_BUILD = "20260605-2";
+const DEPLOY_BUILD = "20260819-1";
 const CACHE_NAME = `daily-note-shell-v${APP_VERSION}-${DEPLOY_BUILD}`;
 const APP_SHELL_FILES = [
   "./",

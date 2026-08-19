@@ -8,19 +8,19 @@
     const SNAPSHOT_KEY = "daily-note-snapshots-v1";
     const SNAPSHOT_LIMIT = 5;
     const APP_VERSION = "0.2.1";
-    const DEPLOY_BUILD = "20260605-1";
+    const DEPLOY_BUILD = "20260819-1";
     const LAST_SEEN_VERSION_KEY = "daily-note-last-seen-version-v1";
     const LAST_EXPORT_AT_KEY = "daily-note-last-export-at-v1";
     const LEGACY_STORAGE_KEY = "daily-note-tasks";
     const ANNOUNCEMENT_VERSION = "0.2.1";
-    const ANNOUNCEMENT_ID = "0.2.1-release-20260605-announcement-panel";
+    const ANNOUNCEMENT_ID = "0.2.1-review-autosave-20260819";
     const ANNOUNCEMENT_READ_KEY = "daily-note-announcement-read-v2";
     const ANNOUNCEMENT_DEFAULT_TAB_KEY = "daily-note-announcement-default-tab-v1";
     const ANNOUNCEMENT_PATCH = {
       id: ANNOUNCEMENT_ID,
-      publishedAt: "2026-06-05T09:00:00+08:00",
+      publishedAt: "2026-08-19T09:00:00+08:00",
       title: "0.2.1 当前版本更新",
-      summary: "本次更新围绕页面结构、公告查看、寄语整理和使用路径进行了集中优化，首页信息层次更清晰，常用入口更集中。",
+      summary: "本次更新在保留 0.2.1 原有优化内容的基础上，补充修复了复盘内容刷新后丢失的问题，并将复盘保存逻辑调整为输入即自动保存。",
       items: [
         "优化了首页布局结构，常用功能入口集中展示，页面信息层次更清晰。",
         "新增了侧边栏收起能力，便于在完整浏览与紧凑使用之间切换。",
@@ -33,7 +33,10 @@
         "新增月度月份胶囊跳转选择器，支持快速切换到指定月份。",
         "新增了寄语库独立入口，支持搜索、筛选、新增、隐藏与恢复整理。",
         "优化了安装入口展示方式，改为按需打开，减少页面干扰。",
-        "完善了页面说明与用户手册联动，常用功能说明定位更方便。"
+        "完善了页面说明与用户手册联动，常用功能说明定位更方便。",
+        "修复了日度复盘与月度复盘刷新后内容丢失的问题。",
+        "复盘内容改为输入时自动保存，无需手动点击保存按钮。",
+        "页面刷新、切换视图后可正常回填已保存的复盘内容。"
       ]
     };
     const ANNOUNCEMENT_MESSAGES = [
@@ -574,10 +577,12 @@
     clearDailyReviewBtn.addEventListener("click", clearDailyReview);
     saveMonthlyReviewBtn.addEventListener("click", saveMonthlyReview);
     clearMonthlyReviewBtn.addEventListener("click", clearMonthlyReview);
-    dailyReviewInput.addEventListener("input", () => markReviewDirty("daily"));
-    monthlyReviewInput.addEventListener("input", () => markReviewDirty("monthly"));
+    dailyReviewInput.addEventListener("input", () => handleReviewInput("daily"));
+    monthlyReviewInput.addEventListener("input", () => handleReviewInput("monthly"));
     dailyReviewInput.addEventListener("keydown", handleReviewShortcut);
     monthlyReviewInput.addEventListener("keydown", handleReviewShortcut);
+    window.addEventListener("pagehide", flushPendingReviewAutosaves);
+    window.addEventListener("beforeunload", flushPendingReviewAutosaves);
 
     function createTaskId() {
       return `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
@@ -3388,11 +3393,35 @@
       inputElement.dataset.reviewKey = key;
       metaElement.textContent = entry?.updatedAt
         ? keepDraft
-          ? "内容已修改，点击保存后会保存在本地浏览器中。"
+          ? "内容已修改，正在自动保存到本地浏览器。"
           : `上次保存：${formatDateTime(entry.updatedAt)}`
         : keepDraft
-          ? "内容已修改，点击保存后会保存在本地浏览器中。"
+          ? "内容已修改，正在自动保存到本地浏览器。"
           : emptyText;
+    }
+
+    function handleReviewInput(type) {
+      const inputElement = type === "monthly" ? monthlyReviewInput : dailyReviewInput;
+      markReviewDirty(type);
+      saveReviewEntry(type, getReviewKeyForType(type), inputElement.value, { auto: true });
+      delete inputElement.dataset.dirty;
+      const metaElement = type === "monthly" ? monthlyReviewMeta : dailyReviewMeta;
+      metaElement.textContent = "内容已自动保存到本地浏览器。";
+    }
+
+    function getReviewKeyForType(type) {
+      return type === "monthly" ? formatMonthKey(state.monthViewDate) : state.selectedDateKey;
+    }
+
+    function flushPendingReviewAutosaves() {
+      const dailySaved = saveReviewEntry("daily", state.selectedDateKey, dailyReviewInput.value, { auto: true });
+      const monthlySaved = saveReviewEntry("monthly", formatMonthKey(state.monthViewDate), monthlyReviewInput.value, { auto: true });
+      if (dailySaved) {
+        delete dailyReviewInput.dataset.dirty;
+      }
+      if (monthlySaved) {
+        delete monthlyReviewInput.dataset.dirty;
+      }
     }
 
     function handleReviewShortcut(event) {
@@ -3410,13 +3439,14 @@
       const inputElement = type === "monthly" ? monthlyReviewInput : dailyReviewInput;
       const metaElement = type === "monthly" ? monthlyReviewMeta : dailyReviewMeta;
       inputElement.dataset.dirty = "true";
-      metaElement.textContent = "内容已修改，点击保存后会保存在本地浏览器中。";
+      metaElement.textContent = "内容已修改，正在自动保存到本地浏览器。";
     }
 
     function saveDailyReview() {
       if (!saveReviewEntry("daily", state.selectedDateKey, dailyReviewInput.value)) {
         return;
       }
+      delete dailyReviewInput.dataset.dirty;
       renderDailyReview();
     }
 
@@ -3425,12 +3455,29 @@
       if (!saveReviewEntry("monthly", monthKey, monthlyReviewInput.value)) {
         return;
       }
+      delete monthlyReviewInput.dataset.dirty;
       renderMonthlyReview();
     }
 
-    function saveReviewEntry(type, key, content) {
+    function saveReviewEntry(type, key, content, options = {}) {
+      const { auto = false } = options;
       const trimmed = content.trim();
       if (!trimmed) {
+        if (auto) {
+          if (!reviews[type]?.[key]) {
+            return false;
+          }
+
+          reviews = {
+            ...reviews,
+            [type]: {
+              ...reviews[type]
+            }
+          };
+          delete reviews[type][key];
+          saveReviews(reviews);
+          return true;
+        }
         const message = type === "monthly" ? "月度复盘内容不能为空。" : "日度复盘内容不能为空。";
         alert(message);
         return false;
@@ -3477,6 +3524,8 @@
         [type]: nextBucket
       };
       saveReviews(reviews);
+      const inputElement = type === "monthly" ? monthlyReviewInput : dailyReviewInput;
+      delete inputElement.dataset.dirty;
     }
 
     function renderTaskList() {
